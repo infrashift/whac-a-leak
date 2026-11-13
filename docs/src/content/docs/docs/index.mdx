@@ -1,0 +1,62 @@
+---
+title: Whac-a-Leak
+description: A lightweight, pure-Go secret scanner with self-testing CUE rules, layered org policy and a two-tier Aho-Corasick engine.
+sidebar:
+  order: 0
+  label: Overview
+---
+
+import { CardGrid, Card, LinkCard, Aside } from '@astrojs/starlight/components';
+
+**Whac-a-Leak** (`whac`) is a secret scanner written in pure Go. It finds API
+keys, tokens, private keys and passwords in your files, staged changes and git
+history before they leak.
+
+Most scanners are a flat list of regexes. Whac-a-Leak's rules are written in
+**CUE**, which gives them types, layering and their own tests. The scanning
+itself is plain Go: CUE runs once, while rules load, and then gets out of the way.
+
+<Aside type="caution" title="Not released yet">
+Whac-a-Leak is pre-alpha. The design is settled and recorded as ADRs, and the
+scanner is being built one milestone at a time. See the
+[roadmap](./project/roadmap/).
+</Aside>
+
+<CardGrid>
+	<Card title="Self-testing rules" icon="approve-check">
+		Every rule carries `mustMatch` and `mustIgnore` samples. They run through
+		the real engine whenever rules load. A rule that fails its own tests stops
+		the ruleset from loading.
+	</Card>
+	<Card title="Layered org policy" icon="setting">
+		Built-in rules are embedded in the binary. Your `.whac/` directory unifies
+		with them: add rules, tighten them, or disable and re-grade them by ID.
+	</Card>
+	<Card title="Two-tier engine" icon="rocket">
+		A single Aho-Corasick keyword pass decides which rules run, and only those
+		run their regex and charset-aware entropy checks.
+	</Card>
+	<Card title="Structure-aware" icon="document">
+		YAML, JSON, `.env`, properties and HCL-style files are read as key paths,
+		so a plain password at `database.credentials.password` is still found.
+	</Card>
+	<Card title="Rebase-proof allowlists" icon="seti:lock">
+		Findings are identified by a `whac1:` fingerprint of the rule and the
+		secret, not by line number, so allowlist entries never go stale.
+	</Card>
+	<Card title="Offline by design" icon="star">
+		No network calls, no telemetry, no live checks against provider APIs. A
+		candidate secret never leaves your machine.
+	</Card>
+</CardGrid>
+
+<LinkCard
+	title="Getting Started"
+	description="Build whac from source and see what works today."
+	href="./getting-started/"
+/>
+<LinkCard
+	title="Design Decisions"
+	description="Why CUE runs only at load time, how layering works, why entropy is charset-aware."
+	href="./project/decisions/"
+/>

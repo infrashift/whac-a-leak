@@ -1,0 +1,226 @@
+---
+// Landing page: not managed by Starlight.
+import { Image } from 'astro:assets';
+import '../styles/landing.css';
+import logo from '../assets/whac-a-leak.jpeg';
+
+// A real rule in the shape of the rule schema (.okfw/specs/rule-schema).
+// From Milestone 5, docs/src/demo/gen.go also produces the scan output shown
+// beside it by running whac itself; until then that panel says "coming soon".
+import ruleSource from '../demo/rule.cue?raw';
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const repo = 'https://github.com/infrashift/whac-a-leak';
+
+const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+// Light CUE highlighting, one line at a time: comments, strings, field labels.
+const ruleHtml = ruleSource
+	.trimEnd()
+	.split('\n')
+	.map((line) => {
+		const c = line.indexOf('//');
+		if (c !== -1 && !line.slice(0, c).includes('"')) {
+			return `${esc(line.slice(0, c))}<span class="cmt">${esc(line.slice(c))}</span>`;
+		}
+		return esc(line).replace(
+			/(#?"(?:[^"\\]|\\.)*"#?)|^(\s*)([A-Za-z_][A-Za-z0-9_]*)(:)|\b(package)\b/g,
+			(m: string, str?: string, ws?: string, label?: string, colon?: string, kw?: string) => {
+				if (str) return `<span class="str">${str}</span>`;
+				if (label) return `${ws}<span class="${/^[A-Z0-9_]+$/.test(label) ? 'rule' : 'key'}">${label}</span>${colon}`;
+				if (kw) return `<span class="kw">${kw}</span>`;
+				return m;
+			},
+		);
+	})
+	.join('\n')
+	// Nested labels such as `rules: ACME_API_TOKEN:` after the first label.
+	.replace(/(<\/span>: )([A-Z0-9_]{3,})(:)/g, '$1<span class="rule">$2</span>$3');
+---
+
+<html lang="en" data-theme="dark">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Whac-a-Leak: Secret Scanning With Self-Testing CUE Rules</title>
+	<meta name="description" content="Whac-a-Leak (whac) is a lightweight, pure-Go secret scanner. Rules are typed, layered and self-testing CUE; scanning is a fast two-tier Aho-Corasick and regex engine that understands YAML, JSON and .env structure, with rebase-proof fingerprints." />
+	<link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+</head>
+<body>
+
+<nav class="nav">
+	<a href={base} class="nav-logo"><span class="prompt">&gt;</span> whac</a>
+	<ul class="nav-links">
+		<li><a href={`${base}docs/`}>Docs</a></li>
+		<li><a href={`${base}docs/getting-started/`}>Quick Start</a></li>
+		<li class="hide-sm"><a href={`${base}docs/project/decisions/`}>Design</a></li>
+		<li class="hide-sm"><a href={`${base}docs/project/roadmap/`}>Roadmap</a></li>
+		<li><a href={repo}>GitHub</a></li>
+		<li><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">&#9790;</button></li>
+	</ul>
+</nav>
+
+<section class="hero">
+	<Image
+		src={logo}
+		alt="An arcade whack-a-mole cabinet labelled 'Secret Scanner: Whac-a-Leak' in a forest. A determined Go gopher in a Go cap works the controls of a robot with mallets and laser sensors, while keys, a padlock, a cert, an API key, a token, a password and a .env file pop out of the holes. The screen reads 'Secret detected! 0 leaks'."
+		class="mascot"
+		width={1600}
+		widths={[480, 800, 1200, 1600]}
+		sizes="(max-width: 46rem) calc(100vw - 2rem), 44rem"
+		format="webp"
+		quality={80}
+		loading="eager"
+		fetchpriority="high"
+	/>
+	<div class="wordmark"><span class="prompt">&gt;</span> whac<span class="caret">_</span></div>
+	<h1>Whack secrets before they leak</h1>
+	<p class="tagline">
+		Whac-a-Leak is a lightweight secret scanner written in pure Go. Its rules are <strong>CUE</strong>:
+		typed, layered by your organization's policy, and <strong>self-testing</strong>, so a broken rule never ships.
+		A two-tier engine checks keywords first, then regex and entropy, and it reads YAML, JSON and
+		<code>.env</code> files as key-value pairs, not just lines.
+	</p>
+	<div class="hero-cta">
+		<a href={`${base}docs/getting-started/`} class="btn btn-primary">Get Started</a>
+		<a href={`${base}docs/project/decisions/`} class="btn btn-secondary">Design Decisions</a>
+		<a href={repo} class="btn btn-ghost">GitHub &rarr;</a>
+	</div>
+</section>
+
+<section class="install">
+	<code>git clone {repo} &amp;&amp; cd whac-a-leak &amp;&amp; make build</code>
+	<span class="note">
+		Needs Go 1.25+ and git. Pre-alpha: the design is settled and the scanner is being built one milestone at a time. <a href={`${base}docs/project/roadmap/`}>See the roadmap.</a>
+	</span>
+</section>
+
+<section class="demo">
+	<div class="demo-grid">
+		<div class="terminal">
+			<div class="terminal-bar">
+				<span class="dot"></span><span class="dot"></span><span class="dot"></span>
+				<span class="title">.whac/acme.cue &nbsp;·&nbsp; a rule with its own tests</span>
+			</div>
+			<pre set:html={ruleHtml}></pre>
+		</div>
+		<div class="terminal">
+			<div class="terminal-bar">
+				<span class="dot"></span><span class="dot"></span><span class="dot"></span>
+				<span class="title">whac scan . &nbsp;·&nbsp; findings</span>
+			</div>
+			<div class="coming-soon">
+				<span class="score">Score 0000</span>
+				<span class="big">Insert coin: coming soon</span>
+				<p>Once the scan engine lands, this panel will show real whac output for this rule, generated by whac itself.</p>
+			</div>
+		</div>
+	</div>
+	<p class="demo-caption">
+		Rules unify with the embedded schema at load time and compile into plain Go matchers. CUE never runs while files are scanned.
+	</p>
+</section>
+
+<section class="features">
+	<h2>Why Whac-a-Leak?</h2>
+	<div class="feature-grid">
+		<div class="feature-card">
+			<div class="icon">&#9989;</div>
+			<h3>Self-Testing Rules</h3>
+			<p>Every rule ships <code>mustMatch</code> and <code>mustIgnore</code> samples. They run through the real engine every time rules load, and a rule that fails its own tests stops the ruleset from loading.</p>
+		</div>
+		<div class="feature-card">
+			<div class="icon">&#129521;</div>
+			<h3>Layered Org Policy</h3>
+			<p>The built-in rules are embedded in the binary. Your <code>.whac/</code> layer unifies with them: add rules, tighten them, disable or re-grade them by ID, all without forking the upstream ruleset.</p>
+		</div>
+		<div class="feature-card">
+			<div class="icon">&#9889;</div>
+			<h3>Two-Tier Engine</h3>
+			<p>A single Aho-Corasick pass picks the candidate rules, and only those run their regex and entropy checks. Pure Go, <code>CGO_ENABLED=0</code>, one static binary.</p>
+		</div>
+		<div class="feature-card">
+			<div class="icon">&#128450;</div>
+			<h3>Structure-Aware</h3>
+			<p>YAML, JSON, <code>.env</code>, properties and HCL-style files are read as key paths, so a plain password under <code>database.credentials.password</code> is caught even with low entropy and no token prefix.</p>
+		</div>
+		<div class="feature-card">
+			<div class="icon">&#128273;</div>
+			<h3>Rebase-Proof Allowlists</h3>
+			<p>Findings are identified by a <code>whac1:</code> fingerprint of the rule and the secret, not by file or line, so allowlist entries survive rebases, moves and reformatting.</p>
+		</div>
+		<div class="feature-card">
+			<div class="icon">&#128270;</div>
+			<h3>Files, History, Agents</h3>
+			<p>Scan a directory, the staged changes in a pre-commit hook, or the full git history. Before an agent starts, audit its environment variables and credential files. Output as text, JSON or SARIF. Fully offline: no secret ever leaves your machine.</p>
+		</div>
+	</div>
+</section>
+
+<section class="roadmap">
+	<h2>Where it's headed</h2>
+	<p class="subtitle">Each milestone is tracked as an issue in the project wiki and lands as its own tested commit.</p>
+	<div class="roadmap-grid">
+		<a class="roadmap-card" href={`${base}docs/project/roadmap/`}>
+			<strong>CUE rules</strong><span>Schema, layering, rules verify</span><br /><span class="status">Next</span>
+		</a>
+		<a class="roadmap-card" href={`${base}docs/project/roadmap/`}>
+			<strong>Scan engine</strong><span>Prefilter, entropy, fingerprints</span><br /><span class="status">Planned</span>
+		</a>
+		<a class="roadmap-card" href={`${base}docs/project/roadmap/`}>
+			<strong>Structure-aware</strong><span>YAML · JSON · .env key paths</span><br /><span class="status">Planned</span>
+		</a>
+		<a class="roadmap-card" href={`${base}docs/project/roadmap/`}>
+			<strong>Git</strong><span>Pre-commit and full history</span><br /><span class="status">Planned</span>
+		</a>
+		<a class="roadmap-card" href={`${base}docs/project/roadmap/`}>
+			<strong>Release</strong><span>SARIF, default rules, CI</span><br /><span class="status">Planned</span>
+		</a>
+		<a class="roadmap-card" href={`${base}docs/project/roadmap/`}>
+			<strong>Agent preflight</strong><span>Env vars, SSO caches, sockets</span><br /><span class="status">Planned</span>
+		</a>
+	</div>
+</section>
+
+<section class="callout">
+	<div class="callout-inner">
+		<h3>Every leak gets whacked, every rule proves itself</h3>
+		<p>A secret scanner is only as good as its rules. In Whac-a-Leak, a rule that can't pass its own tests doesn't load.</p>
+		<a href={`${base}docs/getting-started/`} class="btn btn-primary">Get Started</a>
+		<a href={`${base}docs/project/decisions/`} class="btn btn-secondary">Design Decisions</a>
+	</div>
+</section>
+
+<footer class="landing-footer">
+	<p>Built by <a href="https://github.com/infrashift">InfraShift</a> &middot; Sibling of <a href="https://infrashift.github.io/vizzini-pr-reviewer/">Vizzini</a></p>
+</footer>
+
+<script>
+const toggle = document.getElementById('theme-toggle');
+const html = document.documentElement;
+
+function setTheme(theme: string) {
+	html.setAttribute('data-theme', theme);
+	try {
+		localStorage.setItem('whac-theme', theme);
+	} catch {
+		// Storage can be blocked (private windows); the toggle still works for this page view.
+	}
+	if (toggle) toggle.textContent = theme === 'dark' ? '☾' : '☀';
+}
+
+toggle?.addEventListener('click', () => {
+	setTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+});
+
+let saved: string | null = null;
+try {
+	saved = localStorage.getItem('whac-theme');
+} catch {
+	saved = null;
+}
+setTheme(saved || 'dark');
+</script>
+
+</body>
+</html>

@@ -1,0 +1,35 @@
+/* Whac-a-Leak Starlight theme: an arcade amber accent taken from the keys and
+   padlock in the logo, distinct from vizzini's wine-red, mrman's teal and
+   garmr's violet.
+
+   Starlight's own theme rules live in a cascade layer, and unlayered rules
+   like these win over layered ones regardless of specificity. A plain :root
+   override of a scale color therefore leaks into light mode as well, so the
+   dark-only values are scoped to data-theme="dark" (which Starlight sets on
+   <html> after resolving "auto"). */
+:root {
+	--sl-content-width: 52rem;
+}
+
+:root[data-theme='dark'] {
+	--sl-color-accent-low: hsl(38, 45%, 14%);
+	--sl-color-accent: hsl(40, 88%, 52%);
+	--sl-color-accent-high: hsl(42, 90%, 82%);
+	--sl-color-black: hsl(30, 14%, 8%);
+}
+
+:root[data-theme='light'] {
+	--sl-color-accent-low: hsl(42, 85%, 90%);
+	--sl-color-accent: hsl(32, 90%, 34%);
+	--sl-color-accent-high: hsl(28, 70%, 20%);
+}
+
+/* Inline code contrast */
+:root[data-theme='light'] .sl-markdown-content :not(pre) > code {
+	background-color: hsl(40, 30%, 92%);
+	color: hsl(28, 60%, 26%);
+}
+
+.sl-markdown-content table :not(pre) > code {
+	white-space: nowrap;
+}
