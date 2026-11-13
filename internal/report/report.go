@@ -28,14 +28,17 @@ type Options struct {
 	ToolVersion string
 }
 
+// secretText is the secret in full with NoRedact, else the redacted form.
+// Agent-context findings carry no secret, so they always print the mask.
 func secretText(f *scan.Finding, o Options) string {
-	if o.NoRedact {
+	if o.NoRedact && f.Secret != "" {
 		return f.Secret
 	}
 	return f.Redacted
 }
 
 type jsonFinding struct {
+	Category    string         `json:"category"`
 	RuleID      string         `json:"ruleId"`
 	Description string         `json:"description"`
 	Severity    rules.Severity `json:"severity"`
@@ -76,7 +79,7 @@ func JSON(w io.Writer, res *scan.Result, o Options) error {
 	for i := range res.Findings {
 		f := &res.Findings[i]
 		rep.Findings = append(rep.Findings, jsonFinding{
-			RuleID: f.RuleID, Description: f.Description, Severity: f.Severity,
+			Category: category(f), RuleID: f.RuleID, Description: f.Description, Severity: f.Severity,
 			Path: f.Path, Line: f.Line, Column: f.Column, EndLine: f.EndLine,
 			Fingerprint: f.Fingerprint, KeyPath: f.KeyPath, Commit: f.Commit, Author: f.Author, Date: f.Date,
 			Secret: secretText(f, o), Redacted: !o.NoRedact,
@@ -105,7 +108,7 @@ func Text(w io.Writer, res *scan.Result, o Options) error {
 		if o.Color {
 			sev = severityColor[f.Severity] + sev + colorReset
 		}
-		p.printf("%s  %s  %s:%d:%d\n", sev, f.RuleID, f.Path, f.Line, f.Column)
+		p.printf("%s  %s  %s\n", sev, f.RuleID, location(f))
 		p.printf("          %s\n", f.Description)
 		if f.KeyPath != "" {
 			p.printf("          key: %s\n", f.KeyPath)
@@ -113,7 +116,9 @@ func Text(w io.Writer, res *scan.Result, o Options) error {
 		if f.Commit != "" {
 			p.printf("          commit: %s %s %s\n", shortHash(f.Commit), f.Author, f.Date)
 		}
-		p.printf("          secret: %s\n", secretText(f, o))
+		if category(f) == scan.CategorySecret {
+			p.printf("          secret: %s\n", secretText(f, o))
+		}
 		p.printf("          fingerprint: %s\n\n", f.Fingerprint)
 	}
 	p.printf("%s\n", Summary(res))
@@ -150,6 +155,22 @@ func Summary(res *scan.Result) string {
 		fmt.Fprintf(&b, " Suppressed %d.", s.Suppressed)
 	}
 	return b.String()
+}
+
+// location is "path:line:col", or the path alone when there is no line
+// (environment variables, exposure findings).
+func location(f *scan.Finding) string {
+	if f.Line == 0 {
+		return f.Path
+	}
+	return fmt.Sprintf("%s:%d:%d", f.Path, f.Line, f.Column)
+}
+
+func category(f *scan.Finding) string {
+	if f.Category == "" {
+		return scan.CategorySecret
+	}
+	return f.Category
 }
 
 func shortHash(h string) string {

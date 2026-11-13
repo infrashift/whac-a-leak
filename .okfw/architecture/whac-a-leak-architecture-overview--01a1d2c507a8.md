@@ -64,6 +64,7 @@ A worker pool of `GOMAXPROCS` workers processes the chunks. The engine sorts the
 | `internal/source` | filesystem source; staged and history sources with a streaming `-U0` diff parser ([ADR-0014](/decisions/adr-0014-drive-git-with-pinned-options-and-count-hunk-lines--01a1d2ff1a65.md)); env and home sources (Milestone 6) |
 | `internal/allow` | allowlist evaluation |
 | `internal/fingerprint` | `whac1:` fingerprints |
+| `internal/exposure` | SSH agent socket, Docker socket and opt-in cloud metadata checks ([ADR-0011](/decisions/adr-0011-agent-context-preflight-scans-the-environment-and-credential-files-never-process-memory--01a1d2cc210e.md)) |
 | `internal/report` | text, JSON and SARIF 2.1.0 writers |
 
 ## Non-goals

@@ -156,6 +156,33 @@ type Config struct {
 	Exclude map[string]string
 	// SensitivePaths maps key-path globs to the reason they are sensitive.
 	SensitivePaths map[string]string
+	// CredentialPaths are the agent-context credential files, by ID.
+	CredentialPaths map[string]CredentialPath
+	// Exposure configures the agent-context exposure checks.
+	Exposure Exposure
+}
+
+// CredentialPath is a well-known credential file, relative to a root.
+type CredentialPath struct {
+	Glob        string
+	Description string
+	OS          string // "" means every operating system
+	Format      string // "" means: pick the extractor by file name
+	MaxSize     int64
+	Enabled     bool
+}
+
+// ExposureCheck configures one exposure check.
+type ExposureCheck struct {
+	Severity Severity
+	Enabled  bool
+}
+
+// Exposure configures the checks for reachable access to credentials.
+type Exposure struct {
+	SSHAgent      ExposureCheck
+	DockerSocket  ExposureCheck
+	CloudMetadata ExposureCheck
 }
 
 // Allowlist holds suppressions after layering; every entry carries a reason.

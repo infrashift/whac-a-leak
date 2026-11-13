@@ -87,6 +87,30 @@ package whac
 	// Key-path globs → reason. The builtin SENSITIVE_PATH rule reports any
 	// value at these paths in structured files, even with low entropy.
 	sensitivePaths: [Glob=string]: string & !=""
+	// Agent-context preflight (ADR-0011): well-known credential files,
+	// relative to $HOME and to each --root. Keyed by ID, so layers can add
+	// entries or disable one with `enabled: false`.
+	credentialPaths: [ID=string]: #CredentialPath
+	// Reachable access to credentials, reported as exposure findings.
+	exposure: {
+		sshAgent: {severity: *"HIGH" | #Severity, enabled: *true | bool}
+		dockerSocket: {severity: *"CRITICAL" | #Severity, enabled: *true | bool}
+		// Runs only with --probe-imds: the one network request whac makes.
+		cloudMetadata: {severity: *"HIGH" | #Severity, enabled: *true | bool}
+	}
+}
+
+#CredentialPath: {
+	// Doublestar glob relative to the root, e.g. ".aws/sso/cache/*.json".
+	glob:        string & !=""
+	description: string & !=""
+	// Omit for every operating system.
+	os?: "linux" | "darwin" | "windows"
+	// Forces a structural extractor when the file name has no extension.
+	format?: "yaml" | "json" | "dotenv" | "properties" | "ini" | "hcl"
+	// Larger files are skipped. Shell histories need more than the default.
+	maxSize: *1048576 | (int & >0)
+	enabled: *true | bool
 }
 
 #Allowlist: {

@@ -45,6 +45,7 @@ export default defineConfig({
 						{ label: 'Pre-commit Hook', slug: 'docs/guides/pre-commit' },
 						{ label: 'Scanning Git History', slug: 'docs/guides/git-history' },
 						{ label: 'CI & SARIF', slug: 'docs/guides/ci-sarif' },
+						{ label: 'Agent-Context Preflight', slug: 'docs/guides/agent-context' },
 					],
 				},
 				{

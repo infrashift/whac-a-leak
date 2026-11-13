@@ -30,8 +30,15 @@ description: The whac commands, flags and exit codes.
 | `--staged` | off | Scan staged changes. Report only added lines. See [Pre-commit Hook](../../guides/pre-commit/). |
 | `--git[=<range>]` | off | Scan the lines that each commit adds. The default range is `HEAD`. See [Scanning Git History](../../guides/git-history/). |
 
-`--staged` and `--git` exclude each other. With either flag, the path is a
-directory inside the git work tree.
+| `--agent-context` | off | Audit environment variables, credential files and credential sockets. See [Agent-Context Preflight](../../guides/agent-context/). |
+| `--env` | off | Audit environment variables only. |
+| `--home` | off | Audit credential files under `$HOME` and each `--root` only. |
+| `--root` | none | An extra root for credential files, such as a mounted volume. Repeat the flag for more roots. |
+| `--probe-imds` | off | With `--agent-context`: send one `GET` to the cloud metadata endpoint. |
+
+`--staged`, `--git` and the agent-context flags exclude each other. With
+`--staged` or `--git`, the path is a directory inside the git work tree. The
+agent-context flags take no path.
 
 `whac rules list` verifies the samples first. A failed sample stops the
 command with exit code `2`.
@@ -46,7 +53,3 @@ refuses to overwrite another file unless you add `--force`.
 | `0` | Success. No findings at or above the threshold. |
 | `1` | whac reported findings. |
 | `2` | Usage error, invalid layer, failed sample, or I/O error. |
-
-## Planned commands
-
-`whac scan --agent-context` arrives with Milestone 6. See the [roadmap](../../project/roadmap/).

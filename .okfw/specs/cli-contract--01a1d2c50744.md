@@ -73,3 +73,8 @@ Milestone 5: `--format sarif` (SARIF 2.1.0).
 - `partialFingerprints.whacFingerprint/v1` holds the `whac1:` fingerprint. History findings carry `commit`, `author` and `date` in `properties`.
 - SARIF always redacts secrets. `--no-redact` does not apply.
 - A test validates the output against the OASIS SARIF 2.1.0 JSON Schema, which `testdata/sarif/` vendors. CUE's `encoding/jsonschema` reads the schema, so the test needs no new dependency.
+
+Milestone 6: `--agent-context`, `--env`, `--home`, `--root` (repeatable) and `--probe-imds` ([ADR-0011](/decisions/adr-0011-agent-context-preflight-scans-the-environment-and-credential-files-never-process-memory--01a1d2cc210e.md)).
+- The agent-context flags take no path and exclude `--staged` and `--git`. `--probe-imds` needs `--agent-context`. `--root` needs `--agent-context` or `--home`.
+- Findings have a `category` (`secret` or `exposure`). Agent-context findings print `[masked]`; `--no-redact` has no effect.
+- Environment findings have the path `env`, the key path `env.<NAME>` and no line. Exposure findings have the socket path or URL as their path. SARIF omits the region when there is no line.

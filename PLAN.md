@@ -57,9 +57,9 @@ Tracking: [ISSUE-005](.okfw/issues/issue-005-sarif-default-ruleset-ci-docs-demo-
 
 ## Milestone 6 — Agent-context preflight
 Tracking: [ISSUE-006](.okfw/issues/issue-006-agent-context-preflight-environment-credential-files-and-exposure-checks--01a1d2cc2118.md) · Decision: [ADR-0011](.okfw/decisions/adr-0011-agent-context-preflight-scans-the-environment-and-credential-files-never-process-memory--01a1d2cc210e.md) · Needs Milestone 3's extractors
-- [ ] `env` source: process environment → `env.<NAME>` assignments (values never printed)
-- [ ] `home` source: CUE-declared `config.credentialPaths` under `$HOME` + `--root` (AWS SSO cache, gcloud ADC, Azure MSAL, gh, docker, kube, npmrc, pypirc, netrc, git-credentials, shell histories)
-- [ ] Rules: `**.accessToken` / `**.refreshToken` paths, generic JWT, `*_TOKEN|_SECRET|_PASSWORD` env names
-- [ ] Exposure findings: `SSH_AUTH_SOCK`, `docker.sock`; opt-in `--probe-imds` (the one network call)
-- [ ] `whac scan --agent-context` preflight gate (exit 1, `--no-redact` has no effect); no process memory scan
-- [ ] Fake-`$HOME` / `t.Setenv` / temp-socket tests; *Agent-Context Preflight* docs guide (devcontainer + microVM examples)
+- [x] `env` source: process environment → `env.<NAME>` assignments (values never printed)
+- [x] `home` source: CUE-declared `config.credentialPaths` under `$HOME` + `--root` (AWS SSO cache, gcloud ADC, Azure MSAL, gh, docker, kube, npmrc, pypirc, netrc, git-credentials, shell histories)
+- [x] Rules: `**.accessToken` / `**.refreshToken` paths, generic JWT, `*_TOKEN|_SECRET|_PASSWORD` env names
+- [x] Exposure findings: `SSH_AUTH_SOCK`, `docker.sock`; opt-in `--probe-imds` (the one network call)
+- [x] `whac scan --agent-context` preflight gate (exit 1, `--no-redact` has no effect); no process memory scan
+- [x] Fake-`$HOME` / `t.Setenv` / temp-socket tests; *Agent-Context Preflight* docs guide (devcontainer + microVM examples)

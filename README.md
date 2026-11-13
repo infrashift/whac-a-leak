@@ -10,9 +10,10 @@ The scan is plain Go. An Aho-Corasick keyword pass runs first. Only the rules wi
 
 ## Features
 
-- 30 builtin rules. They cover cloud providers, code hosts, SaaS APIs, package registries, Vault, private keys, JWTs and passwords in URLs. See [Default Rules](https://infrashift.github.io/whac-a-leak/docs/reference/default-rules/).
+- 32 builtin rules. They cover cloud providers, code hosts, SaaS APIs, package registries, Vault, private keys, JWTs and passwords in URLs. See [Default Rules](https://infrashift.github.io/whac-a-leak/docs/reference/default-rules/).
 - Organization layers in `.whac/*.cue`: add, tighten, disable or re-grade rules without a fork.
 - Scan a directory, the staged changes (pre-commit) or the git history.
+- Audit an AI agent's context before it starts: environment variables, credential files and credential sockets (`--agent-context`).
 - Text, JSON and SARIF 2.1.0 output. whac redacts secrets by default.
 - About 180 MB/s on one core. Fully offline.
 
@@ -24,6 +25,7 @@ bin/whac scan .                  # scan the work tree; exit 1 on findings
 bin/whac scan --staged           # pre-commit: scan only the lines you add
 bin/whac scan --git              # scan every commit in the history
 bin/whac scan --format sarif .   # SARIF for GitHub code scanning
+bin/whac scan --agent-context    # preflight: what can an agent reach?
 bin/whac rules verify            # run the samples of every rule
 ```
 

@@ -26,8 +26,18 @@ import (
 // binarySniffLen is how many leading bytes are checked for a NUL byte.
 const binarySniffLen = 8000
 
-// Finding is one reported secret.
+// Categories of findings.
+const (
+	// CategorySecret is a matched secret string (the default).
+	CategorySecret = "secret"
+	// CategoryExposure is reachable access to credentials, such as a socket.
+	CategoryExposure = "exposure"
+)
+
+// Finding is one reported secret or exposure.
 type Finding struct {
+	// Category is CategorySecret or CategoryExposure.
+	Category    string
 	RuleID      string
 	Description string
 	Severity    rules.Severity
@@ -130,6 +140,7 @@ func (p *Pipeline) content(path, rel, name string, content []byte) (findings []F
 			continue
 		}
 		findings = append(findings, Finding{
+			Category:    CategorySecret,
 			RuleID:      m.Rule.ID,
 			Description: m.Rule.Description,
 			Severity:    m.Rule.Severity,

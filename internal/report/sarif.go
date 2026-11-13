@@ -80,7 +80,7 @@ type sarifLocation struct {
 
 type sarifPhysical struct {
 	ArtifactLocation sarifArtifact `json:"artifactLocation"`
-	Region           sarifRegion   `json:"region"`
+	Region           *sarifRegion  `json:"region,omitempty"`
 }
 
 type sarifArtifact struct {
@@ -148,8 +148,15 @@ func SARIF(w io.Writer, res *scan.Result, o Options) error {
 	for i := range res.Findings {
 		f := &res.Findings[i]
 		msg := fmt.Sprintf("%s: %s", f.Description, f.Redacted)
+		if category(f) == scan.CategoryExposure {
+			msg = fmt.Sprintf("%s (%s)", f.Description, f.Path)
+		}
 		if f.KeyPath != "" {
 			msg += fmt.Sprintf(" (key %s)", f.KeyPath)
+		}
+		var region *sarifRegion
+		if f.Line > 0 {
+			region = &sarifRegion{StartLine: f.Line, StartColumn: f.Column, EndLine: f.EndLine}
 		}
 		r := sarifResult{
 			RuleID:    f.RuleID,
@@ -158,12 +165,13 @@ func SARIF(w io.Writer, res *scan.Result, o Options) error {
 			Message:   sarifText{Text: msg},
 			Locations: []sarifLocation{{PhysicalLocation: sarifPhysical{
 				ArtifactLocation: sarifArtifact{URI: f.Path},
-				Region:           sarifRegion{StartLine: f.Line, StartColumn: f.Column, EndLine: f.EndLine},
+				Region:           region,
 			}}},
 			PartialFingerprints: map[string]string{fingerprintKey: f.Fingerprint},
 		}
+		r.Properties = map[string]string{"category": category(f)}
 		if f.Commit != "" {
-			r.Properties = map[string]string{"commit": f.Commit, "author": f.Author, "date": f.Date}
+			r.Properties["commit"], r.Properties["author"], r.Properties["date"] = f.Commit, f.Author, f.Date
 		}
 		results = append(results, r)
 	}

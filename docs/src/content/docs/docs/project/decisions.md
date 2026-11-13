@@ -125,3 +125,27 @@ The loader parses the builtin files and each layer, then builds them as one
 CUE package in memory. It needs no `cue.mod` and no files on disk. Layers can
 refer to schema definitions such as `#SecretRule`. The loader skips a schema
 copy from `whac rules export-schema`, so a stale copy never conflicts.
+
+## ADR-0013: Regexes run on keyword line windows
+
+A rule's regex runs only on the lines that hold one of its keywords. The
+first version ran each regex over the whole file and reached 24 MB/s. Line
+windows raised that to about 245 MB/s. A rule with `multiline: true`, such as
+`PRIVATE_KEY`, gets a window of up to 64 KiB. When two rules report the same
+span, whac keeps one finding: the higher severity.
+
+## ADR-0014: Git with pinned options
+
+User git configuration changes diff output: prefixes, signatures, path
+quoting and external diff tools. whac sets those options on every git call.
+The diff parser counts the lines that each hunk announces, so an added line
+that starts with `++` is never read as a file header.
+
+## ADR-0015: Assembled samples and the self-scan
+
+GitHub push protection blocks real-looking tokens. A rule file therefore
+builds each sample for such a format from pieces, for example
+`"sk" + "_live_" + "EXAMPLE…"`. CUE joins the pieces at load time. whac scans
+its own repository in CI. The allowlist covers fixture directories by path,
+and fake values in test files by fingerprint.
+

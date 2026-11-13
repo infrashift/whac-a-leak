@@ -58,6 +58,11 @@ set.
 }
 ```
 
+Each JSON finding has a `category`: `secret` for a matched secret, or
+`exposure` for reachable access to credentials, such as a socket. An exposure
+finding has no line and no secret. Agent-context findings print `[masked]` in
+place of every value.
+
 A finding from `--git` also has `commit`, `author` and `date`. The text
 format prints them on a `commit:` line. The summary then counts commits and
 file changes.

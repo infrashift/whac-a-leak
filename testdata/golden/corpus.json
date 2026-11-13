@@ -5,8 +5,8 @@
     "findings": 15,
     "bySeverity": {
       "CRITICAL": 4,
-      "HIGH": 4,
-      "MEDIUM": 7
+      "HIGH": 5,
+      "MEDIUM": 6
     },
     "files": 12,
     "bytes": 2603,
@@ -18,6 +18,7 @@
   },
   "findings": [
     {
+      "category": "secret",
       "ruleId": "GITHUB_TOKEN",
       "description": "GitHub personal access, OAuth, app or refresh token",
       "severity": "CRITICAL",
@@ -30,6 +31,7 @@
       "redacted": true
     },
     {
+      "category": "secret",
       "ruleId": "GENERIC_API_KEY",
       "description": "High-entropy value assigned to an API key, token or secret name",
       "severity": "MEDIUM",
@@ -42,6 +44,7 @@
       "redacted": true
     },
     {
+      "category": "secret",
       "ruleId": "AWS_ACCESS_KEY_ID",
       "description": "AWS access key ID",
       "severity": "CRITICAL",
@@ -54,6 +57,7 @@
       "redacted": true
     },
     {
+      "category": "secret",
       "ruleId": "GENERIC_API_KEY",
       "description": "High-entropy value assigned to an API key, token or secret name",
       "severity": "MEDIUM",
@@ -66,6 +70,7 @@
       "redacted": true
     },
     {
+      "category": "secret",
       "ruleId": "GITHUB_TOKEN",
       "description": "GitHub personal access, OAuth, app or refresh token",
       "severity": "CRITICAL",
@@ -78,6 +83,7 @@
       "redacted": true
     },
     {
+      "category": "secret",
       "ruleId": "PRIVATE_KEY",
       "description": "PEM-encoded private key",
       "severity": "CRITICAL",
@@ -90,6 +96,7 @@
       "redacted": true
     },
     {
+      "category": "secret",
       "ruleId": "JWT",
       "description": "JSON Web Token",
       "severity": "MEDIUM",
@@ -102,6 +109,7 @@
       "redacted": true
     },
     {
+      "category": "secret",
       "ruleId": "SENSITIVE_PATH",
       "description": "Value at a sensitive key path in a structured file",
       "severity": "HIGH",
@@ -115,6 +123,7 @@
       "redacted": true
     },
     {
+      "category": "secret",
       "ruleId": "SECRET_ASSIGNMENT",
       "description": "High-entropy value assigned to a secret-like key",
       "severity": "MEDIUM",
@@ -128,6 +137,7 @@
       "redacted": true
     },
     {
+      "category": "secret",
       "ruleId": "SENSITIVE_PATH",
       "description": "Value at a sensitive key path in a structured file",
       "severity": "HIGH",
@@ -141,6 +151,7 @@
       "redacted": true
     },
     {
+      "category": "secret",
       "ruleId": "SECRET_ASSIGNMENT",
       "description": "High-entropy value assigned to a secret-like key",
       "severity": "MEDIUM",
@@ -154,6 +165,7 @@
       "redacted": true
     },
     {
+      "category": "secret",
       "ruleId": "SECRET_ASSIGNMENT",
       "description": "High-entropy value assigned to a secret-like key",
       "severity": "MEDIUM",
@@ -167,6 +179,7 @@
       "redacted": true
     },
     {
+      "category": "secret",
       "ruleId": "SENSITIVE_PATH",
       "description": "Value at a sensitive key path in a structured file",
       "severity": "HIGH",
@@ -180,6 +193,7 @@
       "redacted": true
     },
     {
+      "category": "secret",
       "ruleId": "SENSITIVE_PATH",
       "description": "Value at a sensitive key path in a structured file",
       "severity": "HIGH",
@@ -193,14 +207,15 @@
       "redacted": true
     },
     {
-      "ruleId": "SECRET_ASSIGNMENT",
-      "description": "High-entropy value assigned to a secret-like key",
-      "severity": "MEDIUM",
+      "category": "secret",
+      "ruleId": "SESSION_TOKEN",
+      "description": "Session or OAuth token in a structured credential file",
+      "severity": "HIGH",
       "path": "testdata/corpus/structured/settings.json",
       "line": 4,
       "column": 22,
       "endLine": 4,
-      "fingerprint": "whac1:4cbde6fb7d711ba2dd101fe984573612097f8ab8e70cfa4b8686aa84723da061",
+      "fingerprint": "whac1:1a4ebfe5d33df361553edd6706fa6764cc385e7e18fcc22170f31dedab107332",
       "keyPath": "oauth.refreshToken",
       "secret": "Mk4E****5Lp3",
       "redacted": true

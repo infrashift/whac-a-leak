@@ -55,9 +55,29 @@ type overrideSpec struct {
 }
 
 type configSpec struct {
-	MaxFileSize    int64             `json:"maxFileSize"`
-	Exclude        map[string]string `json:"exclude"`
-	SensitivePaths map[string]string `json:"sensitivePaths"`
+	MaxFileSize     int64                         `json:"maxFileSize"`
+	Exclude         map[string]string             `json:"exclude"`
+	SensitivePaths  map[string]string             `json:"sensitivePaths"`
+	CredentialPaths map[string]credentialPathSpec `json:"credentialPaths"`
+	Exposure        struct {
+		SSHAgent      exposureSpec `json:"sshAgent"`
+		DockerSocket  exposureSpec `json:"dockerSocket"`
+		CloudMetadata exposureSpec `json:"cloudMetadata"`
+	} `json:"exposure"`
+}
+
+type credentialPathSpec struct {
+	Glob        string `json:"glob"`
+	Description string `json:"description"`
+	OS          string `json:"os"`
+	Format      string `json:"format"`
+	MaxSize     int64  `json:"maxSize"`
+	Enabled     bool   `json:"enabled"`
+}
+
+type exposureSpec struct {
+	Severity string `json:"severity"`
+	Enabled  bool   `json:"enabled"`
 }
 
 type allowlistSpec struct {
@@ -81,6 +101,9 @@ func compile(doc *document) (*Ruleset, error) {
 			Paths:        nonNil(doc.Allowlist.Paths),
 			Regexes:      nonNil(doc.Allowlist.Regexes),
 		},
+	}
+	if err := compileAgentConfig(&doc.Config, &rs.Config); err != nil {
+		errs = append(errs, err)
 	}
 	for re := range rs.Allowlist.Regexes {
 		if _, err := regexp.Compile(re); err != nil {
@@ -206,6 +229,37 @@ func compileRule(s *ruleSpec) (*Rule, error) {
 		r.Entropy = &Entropy{Min: e.Min, Max: e.Max, MinLen: e.MinLen, Charset: Charset(e.Charset)}
 	}
 	return r, nil
+}
+
+// compileAgentConfig fills the agent-context part of the config.
+func compileAgentConfig(spec *configSpec, cfg *Config) error {
+	cfg.CredentialPaths = map[string]CredentialPath{}
+	var errs []error
+	for id, c := range spec.CredentialPaths {
+		if !doublestar.ValidatePattern(c.Glob) {
+			errs = append(errs, fmt.Errorf("config.credentialPaths.%s: invalid glob %q", id, c.Glob))
+			continue
+		}
+		cfg.CredentialPaths[id] = CredentialPath(c)
+	}
+	checks := []struct {
+		name string
+		in   exposureSpec
+		out  *ExposureCheck
+	}{
+		{"sshAgent", spec.Exposure.SSHAgent, &cfg.Exposure.SSHAgent},
+		{"dockerSocket", spec.Exposure.DockerSocket, &cfg.Exposure.DockerSocket},
+		{"cloudMetadata", spec.Exposure.CloudMetadata, &cfg.Exposure.CloudMetadata},
+	}
+	for _, c := range checks {
+		sev, err := ParseSeverity(c.in.Severity)
+		if err != nil {
+			errs = append(errs, fmt.Errorf("config.exposure.%s: %w", c.name, err))
+			continue
+		}
+		*c.out = ExposureCheck{Severity: sev, Enabled: c.in.Enabled}
+	}
+	return errors.Join(errs...)
 }
 
 // PathGlob converts a dotted key-path glob such as "**.credentials.password"

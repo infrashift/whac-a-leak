@@ -52,23 +52,21 @@ The loader also rejects unknown top-level fields and overrides for unknown rule 
 ## Agent-context configuration (Milestone 6)
 ```cue
 #CredentialPath: {
-	glob:        string                         // relative to $HOME or a --root, e.g. ".aws/sso/cache/*.json"
-	os?:         "linux" | "darwin" | "windows" // omit for all
-	description: string
-	maxSize:     *(1 << 20) | int & >0          // shell histories can be large
+	glob:        string & !=""   // relative to $HOME or a --root, e.g. ".aws/sso/cache/*.json"
+	description: string & !=""
+	os?:         "linux" | "darwin" | "windows"
+	format?:     "yaml" | "json" | "dotenv" | "properties" | "ini" | "hcl"
+	maxSize:     *1048576 | (int & >0)
+	enabled:     *true | bool
 }
-#ExposureCheck: {
-	severity: *"HIGH" | "LOW" | "MEDIUM" | "CRITICAL"
-	enabled:  *true | bool
-}
-config: credentialPaths: [ID=string]: #CredentialPath  // keyed by ID so layers can extend or disable entries
+config: credentialPaths: [ID=string]: #CredentialPath
 config: exposure: {
-	sshAgent:   #ExposureCheck
-	dockerSock: #ExposureCheck
-	imds:       #ExposureCheck & {enabled: *false | bool}  // also requires --probe-imds
+	sshAgent:      {severity: *"HIGH" | #Severity,     enabled: *true | bool}
+	dockerSocket:  {severity: *"CRITICAL" | #Severity, enabled: *true | bool}
+	cloudMetadata: {severity: *"HIGH" | #Severity,     enabled: *true | bool} // also needs --probe-imds
 }
 ```
-The `env` source turns each environment variable into an assignment with the key path `env.<NAME>`. Ordinary `assignment` rules (`keyContext: "(?i)_(token|secret|password)$"`) then apply. See [ADR-0011](/decisions/adr-0011-agent-context-preflight-scans-the-environment-and-credential-files-never-process-memory--01a1d2cc210e.md).
+The environment becomes a dotenv document named `env`. Findings in it get the key path `env.<NAME>`. See [ADR-0011](/decisions/adr-0011-agent-context-preflight-scans-the-environment-and-credential-files-never-process-memory--01a1d2cc210e.md).
 
 ## Rule kinds
 - **pattern**: a regex runs over raw content after a keyword match. Example: a provider token with a known prefix.

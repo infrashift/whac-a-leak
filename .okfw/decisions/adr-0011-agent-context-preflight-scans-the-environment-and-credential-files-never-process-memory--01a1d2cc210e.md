@@ -52,3 +52,12 @@ Coding agents run in devcontainers and microVMs. An agent can read everything it
 - **Process memory scan.** Rejected for the reasons above.
 - **IMDS probe on by default.** Rejected: it is a network call, and it adds noise on laptops.
 - **A separate tool.** Rejected: the `env` and `home` sources reuse the engine, the rules and the allowlists.
+
+## Implementation note (Milestone 6)
+- The `env` source renders the environment as a dotenv document named `env`. The dotenv extractor and the pattern rules run on it unchanged. Findings get the key path `env.<NAME>` and no line number.
+- `config.credentialPaths` entries have an optional `format`. `~/.kube/config` has no file extension, so its entry sets `format: "yaml"`.
+- The exposure checks are `config.exposure.sshAgent`, `dockerSocket` and `cloudMetadata`. Their severity defaults live in the schema, so a layer can re-grade them. The cloud metadata check also needs `--probe-imds`.
+- Exposure findings have the category `exposure` and a fingerprint of (check ID, socket or URL), so `whac allow add` accepts a deliberate exposure.
+- whac resolves symlinks before it deduplicates Docker sockets: `/var/run` is often a link to `/run`.
+- New rules: `SESSION_TOKEN` (token key paths in structured credential files) and `NETRC_PASSWORD`. Environment names such as `DB_PASSWORD` reach `SENSITIVE_PATH`; `*_TOKEN` and `*_SECRET` values reach `SECRET_ASSIGNMENT`.
+- Every agent-context finding carries `[masked]`, and the report never prints the value, even with `--no-redact`.

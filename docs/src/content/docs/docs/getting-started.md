@@ -36,13 +36,10 @@ To check commits before they happen, read
 [Writing Rules](../guides/writing-rules/). To
 suppress a false positive, read [Allowlists & Fingerprints](../guides/allowlists/).
 
-## Planned commands
+## Audit an agent's context
 
-The project CLI spec defines these commands. They do **not exist yet**:
-
-```sh
-whac scan --agent-context        # preflight: env vars, credential files, sockets
-```
+Run `bin/whac scan --agent-context` before an AI agent starts. See
+[Agent-Context Preflight](../guides/agent-context/).
 
 Exit codes:
 
