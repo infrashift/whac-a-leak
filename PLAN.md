@@ -78,4 +78,4 @@ Tracking: [ISSUE-008](.okfw/issues/issue-008-report-files-with-output--01a1d3699
 - [x] Validation before the scan; mode 0600, no colors, temporary file + rename
 - [x] Tests: text + JSON + SARIF in one run, errors, `--no-redact`, agent-context mode
 - [x] Docs: CLI reference, Output Formats, CI & SARIF; CI self-scan uses `--output`
-- [ ] Release v0.2.0
+- [x] Release v0.2.0
