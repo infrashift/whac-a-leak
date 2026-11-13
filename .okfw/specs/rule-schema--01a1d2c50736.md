@@ -22,7 +22,7 @@ The source is `internal/rules/builtin/schema.cue`. The docs site shows the file 
 |---|---|---|
 | `rules` | `[ID=string]: #SecretRule & {id: ID}` | Rules. The field name is the rule ID. |
 | `overrides` | `[ID=string]: #Override` | Re-grade (`severity`) or disable (`enabled`) a rule by ID. |
-| `config` | `#Config` | `maxFileSize` (default 2 MiB), `exclude: [glob]: reason`. |
+| `config` | `#Config` | `maxFileSize` (default 2 MiB), `exclude: [glob]: reason`, `sensitivePaths: [key-path glob]: reason`. |
 | `allowlist` | `#Allowlist` | `fingerprints`, `paths` and `regexes`, each a map from key to reason. |
 
 `#SecretRule` fields and defaults:
@@ -39,7 +39,7 @@ The source is `internal/rules/builtin/schema.cue`. The docs site shows the file 
 | `keyContext`, `paths` | assignment rules (Milestone 3) |
 | `entropy` | optional: `min`, `max`, `minLen` (default 16), `charset` |
 | `stopwords`, `allowRegexes` | empty |
-| `tests.mustMatch`, `tests.mustIgnore` | one or more, empty |
+| `tests.mustMatch`, `tests.mustIgnore` | one or more, empty. Each sample is a string or `{file, content}`; the file name selects the extractor. |
 
 Constraints in CUE:
 - A pattern rule needs a `regex` and at least one keyword.

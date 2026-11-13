@@ -11,10 +11,7 @@ import (
 func TestLineWindows(t *testing.T) {
 	content := []byte("aa\nbb key cc key\ndd\nee key\n")
 	//                 0  3          15  17 20
-	hits := keywordHits(&rules.Rule{Keywords: []string{"key"}}, content)
-	if len(hits) != 3 {
-		t.Fatalf("hits = %v", hits)
-	}
+	hits := []span{{6, 9}, {13, 16}, {23, 26}}
 	got := lineWindows(content, hits, false)
 	want := []span{{3, 16}, {20, 26}}
 	if !slices.Equal(got, want) {
@@ -28,20 +25,20 @@ func TestLineWindows(t *testing.T) {
 	}
 }
 
-func TestKeywordHitsFoldsASCIIOnly(t *testing.T) {
+func TestKeywordsFoldASCIIOnly(t *testing.T) {
 	// "İ" (U+0130) lowers to a longer UTF-8 sequence; ASCII folding keeps
 	// every offset valid.
-	content := []byte("İİ TOK_x tok_y")
-	hits := keywordHits(&rules.Rule{Keywords: []string{"tok_"}}, content)
-	if len(hits) != 2 || string(content[hits[0].start:hits[0].end]) != "TOK_" {
-		t.Errorf("hits = %v", hits)
+	content := []byte("İİ TOK_Q9wv7Lm2Rt")
+	ms := MatchRule(rule(t, `(?i)(tok_[A-Za-z0-9]{10})`, nil), content)
+	if len(ms) != 1 || string(content[ms[0].Start:ms[0].End]) != "TOK_Q9wv7Lm2Rt" {
+		t.Errorf("matches = %v", ms)
 	}
 }
 
 func TestMultilineRequiredForSpanningSecrets(t *testing.T) {
 	r := rule(t, `(?s)(BEGIN.+?END)`, func(r *rules.Rule) {
 		r.Keywords = []string{"begin"}
-		r.Tests.MustMatch = []string{"BEGIN\nbody\nEND"}
+		r.Tests.MustMatch = []rules.Sample{{Content: "BEGIN\nbody\nEND"}}
 	})
 	fs := Verify([]*rules.Rule{r})
 	if len(fs) != 1 || !strings.Contains(fs[0].Reason, "multiline: true") {

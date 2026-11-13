@@ -14,14 +14,20 @@ type Match struct {
 	// Start and End are the byte offsets of the secret within the content.
 	Start, End int
 	Secret     string
+	// KeyPath is set for assignment rules.
+	KeyPath string
 }
 
 // trace records why a rule produced nothing, for `whac rules verify`.
 // A nil *trace records nothing.
 type trace struct {
-	keywordHit bool
-	regexHits  int
-	rejections []string
+	assignment  bool // the rule is an assignment rule
+	keywordHit  bool
+	structured  bool // the sample parsed as a structured file
+	regexHits   int
+	assignments int // key/value pairs the extractors produced
+	selected    int // pairs the rule's keyContext or paths selected
+	rejections  []string
 }
 
 func (t *trace) reject(reason string) {
@@ -33,6 +39,17 @@ func (t *trace) reject(reason string) {
 // explain describes the furthest stage a sample reached without a finding.
 // It never quotes the sample.
 func (t *trace) explain() string {
+	if t.assignment {
+		switch {
+		case !t.structured && !t.keywordHit:
+			return "no keyword appears in the sample, and it is not a structured file"
+		case t.assignments == 0:
+			return "the extractor found no key/value pair"
+		case t.selected == 0:
+			return "no key matches keyContext or paths"
+		}
+		return "every selected value was rejected: " + strings.Join(t.rejections, "; ")
+	}
 	switch {
 	case !t.keywordHit:
 		return "no keyword appears in the sample"
@@ -42,11 +59,10 @@ func (t *trace) explain() string {
 	return "every regex match was rejected: " + strings.Join(t.rejections, "; ")
 }
 
-// MatchRule evaluates one pattern rule over content the way a scan does:
-// keyword hits, line windows, regex, secret group, entropy, safe formats,
-// stopwords and allowRegexes.
+// MatchRule evaluates one rule over content the way a scan of an
+// unstructured text file does, whether or not the rule is enabled.
 func MatchRule(r *rules.Rule, content []byte) []Match {
-	return evalRule(r, content, keywordHits(r, content), nil)
+	return newScanner([]*rules.Rule{r}, true).scan("sample.txt", content, nil)
 }
 
 // matchRule runs the regex and filters over one window. Callers pass the
@@ -66,7 +82,7 @@ func matchRule(r *rules.Rule, content []byte, t *trace) []Match {
 			continue
 		}
 		secret := string(content[start:end])
-		if reason := rejectSecret(r, secret); reason != "" {
+		if reason := rejectSecret(r, secret, ""); reason != "" {
 			t.reject(reason)
 			continue
 		}
@@ -75,13 +91,14 @@ func matchRule(r *rules.Rule, content []byte, t *trace) []Match {
 	return out
 }
 
-// rejectSecret returns why a candidate secret is dropped, or "".
-func rejectSecret(r *rules.Rule, secret string) string {
+// rejectSecret returns why a candidate secret is dropped, or "". key is the
+// assignment key, or "" for a pattern match.
+func rejectSecret(r *rules.Rule, secret, key string) string {
 	if r.Entropy != nil {
 		// Safe formats have high entropy but are not secrets. The exclusion
 		// belongs to the entropy heuristic: a rule without an entropy block
 		// matches a precise token format and keeps every match (ADR-0006).
-		if reason := safeFormat(secret); reason != "" {
+		if reason := safeFormat(secret, key); reason != "" {
 			return reason
 		}
 		if reason := checkEntropy(r.Entropy, secret); reason != "" {

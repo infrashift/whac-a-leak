@@ -36,6 +36,9 @@ type Finding struct {
 	// Line for a multi-line secret such as a PEM key.
 	Line, Column, EndLine int
 	Fingerprint           string
+	// KeyPath is the key path of an assignment finding, e.g.
+	// "database.credentials.password".
+	KeyPath string
 	// Secret is the matched secret. Reports print Redacted unless the user
 	// asks otherwise.
 	Secret   string
@@ -99,7 +102,7 @@ func IsBinary(content []byte) bool {
 // path that allowlist globs match. It returns the findings and the number of
 // matches the allowlist or an inline marker suppressed.
 func (p *Pipeline) Content(path, rel string, content []byte) (findings []Finding, suppressed int) {
-	matches := p.Scanner.Scan(content)
+	matches := p.Scanner.Scan(rel, content)
 	if len(matches) == 0 {
 		return nil, 0
 	}
@@ -124,6 +127,7 @@ func (p *Pipeline) Content(path, rel string, content []byte) (findings []Finding
 			Column:      lines.column(content, line, m.Start),
 			EndLine:     lines.line(max(m.End-1, m.Start)),
 			Fingerprint: fp,
+			KeyPath:     m.KeyPath,
 			Secret:      m.Secret,
 			Redacted:    Redact(m.Secret),
 		})

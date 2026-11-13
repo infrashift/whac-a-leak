@@ -60,7 +60,7 @@ func TestLoadBuiltins(t *testing.T) {
 		if i > 0 && rs.Rules[i-1].ID >= r.ID {
 			t.Errorf("rules not sorted: %s before %s", rs.Rules[i-1].ID, r.ID)
 		}
-		if r.Kind != KindPattern || r.Regex == nil || len(r.Keywords) == 0 || len(r.Tests.MustMatch) == 0 {
+		if len(r.Tests.MustMatch) == 0 || (r.Kind == KindPattern && (r.Regex == nil || len(r.Keywords) == 0)) {
 			t.Errorf("%s: incomplete compiled rule %+v", r.ID, r)
 		}
 		for _, k := range r.Keywords {
@@ -215,9 +215,14 @@ func TestLoadErrors(t *testing.T) {
 			want:  []string{"rules.BAD.entropy.max"},
 		},
 		{
-			name:  "assignment rules are not supported yet",
-			files: map[string]string{"a.cue": "package whac\nrules: BAD: {description: \"x\", kind: \"assignment\", keyContext: \"(?i)token\", tests: mustMatch: [\"x\"]}\n"},
-			want:  []string{"rules.BAD", "assignment"},
+			name:  "assignment rule without keyContext or paths",
+			files: map[string]string{"a.cue": "package whac\nrules: BAD: {description: \"x\", kind: \"assignment\", tests: mustMatch: [\"x\"]}\n"},
+			want:  []string{"rules.BAD", "keyContext, paths, or both"},
+		},
+		{
+			name:  "invalid path glob",
+			files: map[string]string{"a.cue": "package whac\nrules: BAD: {description: \"x\", kind: \"assignment\", paths: [\"a.[\"], tests: mustMatch: [\"x\"]}\n"},
+			want:  []string{"rules.BAD", "invalid glob"},
 		},
 		{
 			name:  "malformed allowlist fingerprint",

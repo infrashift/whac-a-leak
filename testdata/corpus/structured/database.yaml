@@ -1,0 +1,10 @@
+# Every value is fake.
+database:
+  host: db.internal
+  credentials:
+    username: app
+    password: EXAMPLE-hunter2
+replica:
+  password: ${REPLICA_PASSWORD}
+cache:
+  password: changeme

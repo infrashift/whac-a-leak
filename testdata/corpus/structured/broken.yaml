@@ -1,0 +1,3 @@
+# Invalid YAML: whac falls back to the lines that hold a keyword.
+session_secret: Pz5EXAMPLEw8Gk3Nd6Yh2Jc9
+  bad: [unclosed

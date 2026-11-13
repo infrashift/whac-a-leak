@@ -20,11 +20,17 @@ rules. The scan itself is plain Go.
    match ignores ASCII case. Only rules with a keyword hit continue.
 5. **Windows.** For each keyword hit, the engine takes the whole line. A
    `multiline` rule takes up to 64 KiB from the start of that line.
-6. **Match.** The regex of the rule runs on each window. The engine then
+6. **Match.** The regex of a pattern rule runs on each window. The engine then
    checks the secret group, safe formats, entropy, stopwords and allow regexes.
-7. **Suppress.** whac drops a finding when its line contains `whac:ignore`, or
+7. **Assignments.** For a structured file, whac extracts every key/value pair.
+   For other text, whac extracts pairs on the keyword lines of each assignment
+   rule. Assignment rules check each pair. See
+   [Structured Files](../structured-files/).
+8. **Deduplicate.** When two rules report the same span, whac keeps the higher
+   severity.
+9. **Suppress.** whac drops a finding when its line contains `whac:ignore`, or
    when an allowlist entry matches it.
-8. **Report.** whac sorts the findings by path, line, column and rule ID. It
+10. **Report.** whac sorts the findings by path, line, column and rule ID. It
    writes text or JSON.
 
 ## Safe formats
@@ -36,7 +42,7 @@ it is not a secret. whac drops a UUID for these rules. A rule without an
 ## Performance
 
 The prefilter keeps the regex work small. On keyword-sparse source code, the
-builtin rules scan about 245 MB/s on one CPU core. whac scans files in
+builtin rules scan about 195 MB/s on one CPU core. whac scans files in
 parallel, with one worker per CPU.
 
 ## Exit codes

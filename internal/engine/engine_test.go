@@ -176,28 +176,28 @@ func TestVerifyReportsFailuresWithoutSampleText(t *testing.T) {
 			name: "mustMatch without keyword",
 			r: rule(t, `(tok_[A-Z]+)`, func(r *rules.Rule) {
 				r.Keywords = []string{"nope"}
-				r.Tests.MustMatch = []string{secret}
+				r.Tests.MustMatch = []rules.Sample{{Content: secret}}
 			}),
 			wantSample: "mustMatch[0]", wantReason: "no keyword",
 		},
 		{
 			name:       "mustMatch regex miss",
-			r:          rule(t, `(tok_[0-9]+)`, func(r *rules.Rule) { r.Tests.MustMatch = []string{secret} }),
+			r:          rule(t, `(tok_[0-9]+)`, func(r *rules.Rule) { r.Tests.MustMatch = []rules.Sample{{Content: secret}} }),
 			wantSample: "mustMatch[0]", wantReason: "regex does not match",
 		},
 		{
 			name: "mustMatch rejected by entropy",
 			r: rule(t, `(tok_[A-Z]+)`, func(r *rules.Rule) {
 				r.Entropy = &rules.Entropy{MinLen: 64}
-				r.Tests.MustMatch = []string{secret}
+				r.Tests.MustMatch = []rules.Sample{{Content: secret}}
 			}),
 			wantSample: "mustMatch[0]", wantReason: "minLen 64",
 		},
 		{
 			name: "mustIgnore produces a finding",
 			r: rule(t, `(tok_[A-Z]+)`, func(r *rules.Rule) {
-				r.Tests.MustMatch = []string{"tok_OK"}
-				r.Tests.MustIgnore = []string{"fine", secret}
+				r.Tests.MustMatch = []rules.Sample{{Content: "tok_OK"}}
+				r.Tests.MustIgnore = []rules.Sample{{Content: "fine"}, {Content: secret}}
 			}),
 			wantSample: "mustIgnore[1]", wantReason: "expected none",
 		},

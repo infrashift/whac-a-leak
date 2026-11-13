@@ -57,6 +57,9 @@ set.
 }
 ```
 
+An assignment finding also has `keyPath`, for example
+`"database.credentials.password"`. The text format prints it as `key:`.
+
 `findings` is an empty array when whac finds nothing. `endLine` differs from
 `line` for a secret that spans lines, such as a PEM key.
 

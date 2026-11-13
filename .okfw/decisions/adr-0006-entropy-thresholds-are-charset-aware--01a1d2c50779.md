@@ -40,4 +40,4 @@ The initial values above are not reachable for short secrets. A 20-character str
 
 ## Implementation note (Milestone 2)
 - Safe-format exclusions belong to the entropy heuristic. The engine applies them only to a rule with an `entropy` block. A rule without one matches a precise token format and keeps every match.
-- Milestone 2 implements one safe format: the UUID. Formats that need key context, such as hashes under checksum keys, arrive with the assignment rules in Milestone 3.
+- Milestone 2 implements one safe format: the UUID. Milestone 3 adds file paths and URLs without credentials. It also adds hex hashes (32–128 digits) under a hash-like key, such as `sha` or `checksum`.

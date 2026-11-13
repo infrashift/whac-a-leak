@@ -2,6 +2,9 @@ package rules
 
 import (
 	"errors"
+
+	"github.com/bmatcuk/doublestar/v4"
+
 	"fmt"
 	"regexp"
 	"slices"
@@ -42,8 +45,8 @@ type entropySpec struct {
 }
 
 type testsSpec struct {
-	MustMatch  []string `json:"mustMatch"`
-	MustIgnore []string `json:"mustIgnore"`
+	MustMatch  []any `json:"mustMatch"`
+	MustIgnore []any `json:"mustIgnore"`
 }
 
 type overrideSpec struct {
@@ -52,8 +55,9 @@ type overrideSpec struct {
 }
 
 type configSpec struct {
-	MaxFileSize int64             `json:"maxFileSize"`
-	Exclude     map[string]string `json:"exclude"`
+	MaxFileSize    int64             `json:"maxFileSize"`
+	Exclude        map[string]string `json:"exclude"`
+	SensitivePaths map[string]string `json:"sensitivePaths"`
 }
 
 type allowlistSpec struct {
@@ -67,7 +71,11 @@ type allowlistSpec struct {
 func compile(doc *document) (*Ruleset, error) {
 	var errs []error
 	rs := &Ruleset{
-		Config: Config{MaxFileSize: doc.Config.MaxFileSize, Exclude: nonNil(doc.Config.Exclude)},
+		Config: Config{
+			MaxFileSize:    doc.Config.MaxFileSize,
+			Exclude:        nonNil(doc.Config.Exclude),
+			SensitivePaths: nonNil(doc.Config.SensitivePaths),
+		},
 		Allowlist: Allowlist{
 			Fingerprints: nonNil(doc.Allowlist.Fingerprints),
 			Paths:        nonNil(doc.Allowlist.Paths),
@@ -144,13 +152,19 @@ func compileRule(s *ruleSpec) (*Rule, error) {
 		SecretGroup: s.SecretGroup,
 		Multiline:   s.Multiline,
 		Paths:       s.Paths,
-		Tests:       Tests{MustMatch: s.Tests.MustMatch, MustIgnore: s.Tests.MustIgnore},
+	}
+	if r.Tests.MustMatch, err = samples(s.Tests.MustMatch); err != nil {
+		return nil, fmt.Errorf("tests.mustMatch: %w", err)
+	}
+	if r.Tests.MustIgnore, err = samples(s.Tests.MustIgnore); err != nil {
+		return nil, fmt.Errorf("tests.mustIgnore: %w", err)
 	}
 	switch r.Kind {
 	case KindPattern:
 	case KindAssignment:
-		// Assignment rules need the structural extractors (Milestone 3).
-		return nil, errors.New(`kind "assignment" is not supported yet; use a pattern rule`)
+		if s.KeyContext == "" && len(s.Paths) == 0 {
+			return nil, errors.New("an assignment rule needs keyContext, paths, or both")
+		}
 	default:
 		return nil, fmt.Errorf("unknown kind %q", s.Kind)
 	}
@@ -158,11 +172,20 @@ func compileRule(s *ruleSpec) (*Rule, error) {
 	for _, k := range s.Keywords {
 		r.Keywords = append(r.Keywords, strings.ToLower(k))
 	}
-	if r.Regex, err = regexp.Compile(s.Regex); err != nil {
-		return nil, fmt.Errorf("regex: %w", err)
+	if s.Regex != "" || r.Kind == KindPattern {
+		if r.Regex, err = regexp.Compile(s.Regex); err != nil {
+			return nil, fmt.Errorf("regex: %w", err)
+		}
+		if n := r.Regex.NumSubexp(); r.SecretGroup > n {
+			return nil, fmt.Errorf("secretGroup %d, but the regex has only %d capture group(s)", r.SecretGroup, n)
+		}
 	}
-	if n := r.Regex.NumSubexp(); r.SecretGroup > n {
-		return nil, fmt.Errorf("secretGroup %d, but the regex has only %d capture group(s)", r.SecretGroup, n)
+	for _, p := range s.Paths {
+		g := PathGlob(p)
+		if !doublestar.ValidatePattern(g) {
+			return nil, fmt.Errorf("paths: invalid glob %q", p)
+		}
+		r.PathGlobs = append(r.PathGlobs, g)
 	}
 	if s.KeyContext != "" {
 		if r.KeyContext, err = regexp.Compile(s.KeyContext); err != nil {
@@ -183,6 +206,33 @@ func compileRule(s *ruleSpec) (*Rule, error) {
 		r.Entropy = &Entropy{Min: e.Min, Max: e.Max, MinLen: e.MinLen, Charset: Charset(e.Charset)}
 	}
 	return r, nil
+}
+
+// PathGlob converts a dotted key-path glob such as "**.credentials.password"
+// into the lowercased, slash-separated form that doublestar matches.
+func PathGlob(dotted string) string {
+	return strings.ToLower(strings.ReplaceAll(dotted, ".", "/"))
+}
+
+// samples converts decoded CUE samples: a string, or {file, content}.
+func samples(in []any) ([]Sample, error) {
+	out := make([]Sample, 0, len(in))
+	for i, v := range in {
+		switch s := v.(type) {
+		case string:
+			out = append(out, Sample{Content: s})
+		case map[string]any:
+			file, _ := s["file"].(string)
+			content, ok := s["content"].(string)
+			if file == "" || !ok {
+				return nil, fmt.Errorf("[%d]: want a string or {file, content}", i)
+			}
+			out = append(out, Sample{File: file, Content: content})
+		default:
+			return nil, fmt.Errorf("[%d]: want a string or {file, content}", i)
+		}
+	}
+	return out, nil
 }
 
 func nonNil(m map[string]string) map[string]string {

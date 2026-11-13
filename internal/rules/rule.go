@@ -101,10 +101,25 @@ type Entropy struct {
 	Charset Charset
 }
 
+// Sample is one rule sample. File, when set, names the file the content
+// comes from, so the engine picks the matching structural extractor.
+type Sample struct {
+	File    string
+	Content string
+}
+
+// Name is the file name the engine scans the sample as.
+func (s Sample) Name() string {
+	if s.File == "" {
+		return "sample.txt"
+	}
+	return s.File
+}
+
 // Tests are a rule's own samples (ADR-0009).
 type Tests struct {
-	MustMatch  []string
-	MustIgnore []string
+	MustMatch  []Sample
+	MustIgnore []Sample
 }
 
 // Rule is a compiled, ready-to-run rule.
@@ -122,7 +137,10 @@ type Rule struct {
 	// Multiline widens the regex window beyond the keyword's line.
 	Multiline  bool
 	KeyContext *regexp.Regexp
-	Paths      []string
+	// Paths are the rule's key-path globs as written; PathGlobs are the same
+	// globs lowercased with "/" separators, ready for doublestar.
+	Paths     []string
+	PathGlobs []string
 
 	Entropy      *Entropy
 	Stopwords    []string // lowercased
@@ -136,6 +154,8 @@ type Config struct {
 	MaxFileSize int64
 	// Exclude maps doublestar globs to the reason they are excluded.
 	Exclude map[string]string
+	// SensitivePaths maps key-path globs to the reason they are sensitive.
+	SensitivePaths map[string]string
 }
 
 // Allowlist holds suppressions after layering; every entry carries a reason.

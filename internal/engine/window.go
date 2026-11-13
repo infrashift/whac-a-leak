@@ -13,38 +13,6 @@ const multilineSpan = 64 << 10
 // span is a byte range [start, end) of content.
 type span struct{ start, end int }
 
-// asciiLower folds A-Z only, so byte offsets stay valid. The Aho-Corasick
-// prefilter folds case the same way.
-func asciiLower(b []byte) []byte {
-	out := make([]byte, len(b))
-	for i, c := range b {
-		if c >= 'A' && c <= 'Z' {
-			c += 'a' - 'A'
-		}
-		out[i] = c
-	}
-	return out
-}
-
-// keywordHits finds every occurrence of the rule's keywords. It is the
-// single-rule form of the Scanner's prefilter.
-func keywordHits(r *rules.Rule, content []byte) []span {
-	lower := asciiLower(content)
-	var hits []span
-	for _, k := range r.Keywords {
-		kb := []byte(k)
-		for i := 0; i <= len(lower)-len(kb); {
-			j := bytes.Index(lower[i:], kb)
-			if j < 0 {
-				break
-			}
-			hits = append(hits, span{i + j, i + j + len(kb)})
-			i += j + 1
-		}
-	}
-	return hits
-}
-
 // lineWindows turns keyword hits into the merged windows that a rule's regex
 // runs on. A hit covers its whole line; for a multiline rule it covers
 // multilineSpan bytes from the start of its line, rounded up to a line end.

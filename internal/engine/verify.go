@@ -26,20 +26,19 @@ func (f Failure) String() string {
 func Verify(rs []*rules.Rule) []Failure {
 	var out []Failure
 	for _, r := range rs {
+		sc := newScanner([]*rules.Rule{r}, true)
 		for i, s := range r.Tests.MustMatch {
-			content := []byte(s)
-			hits := keywordHits(r, content)
-			t := &trace{keywordHit: len(hits) > 0}
-			if len(evalRule(r, content, hits, t)) == 0 {
+			t := &trace{}
+			if len(sc.scan(s.Name(), []byte(s.Content), t)) == 0 {
 				reason := t.explain()
-				if t.keywordHit && t.regexHits == 0 && !r.Multiline && strings.ContainsRune(s, '\n') {
+				if r.Kind == rules.KindPattern && t.keywordHit && t.regexHits == 0 && !r.Multiline && strings.ContainsRune(s.Content, '\n') {
 					reason += " on the keyword's line; set multiline: true for a secret that spans lines"
 				}
 				out = append(out, Failure{RuleID: r.ID, Sample: fmt.Sprintf("mustMatch[%d]", i), Reason: reason})
 			}
 		}
 		for i, s := range r.Tests.MustIgnore {
-			if n := len(MatchRule(r, []byte(s))); n > 0 {
+			if n := len(sc.scan(s.Name(), []byte(s.Content), nil)); n > 0 {
 				out = append(out, Failure{RuleID: r.ID, Sample: fmt.Sprintf("mustIgnore[%d]", i),
 					Reason: fmt.Sprintf("produced %d finding(s), expected none", n)})
 			}

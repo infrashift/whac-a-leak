@@ -3,8 +3,10 @@ package cli
 import (
 	"bytes"
 	"flag"
+	"io/fs"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -128,4 +130,60 @@ func TestDocsDemoOutputIsCurrent(t *testing.T) {
 	if out != string(want) {
 		t.Errorf("docs/src/demo/scan-output.txt is stale; run `make docs-demo`.\ngot:\n%s", out)
 	}
+}
+
+var cueBlockRe = regexp.MustCompile("(?s)```cue\n(.*?)```")
+
+// TestDocsCueExamplesVerify loads every complete CUE layer in the docs
+// (a ```cue block with a package clause) and runs its rule samples, so a
+// docs example cannot drift from the schema or the engine.
+func TestDocsCueExamplesVerify(t *testing.T) {
+	root := filepath.Join("..", "..", "docs", "src", "content", "docs")
+	n := 0
+	err := filepath.WalkDir(root, func(p string, d fs.DirEntry, err error) error {
+		if err != nil || d.IsDir() || !strings.HasPrefix(filepath.Ext(p), ".md") {
+			return err
+		}
+		data, err := os.ReadFile(p) //nolint:gosec // G304: docs files in the repository
+		if err != nil {
+			return err
+		}
+		for i, m := range cueBlockRe.FindAllSubmatch(data, -1) {
+			block := dedent(string(m[1]))
+			if !strings.HasPrefix(block, "package whac") {
+				continue
+			}
+			n++
+			dir := layerDir(t, map[string]string{"example.cue": block})
+			if code, out, errOut := run(t, "rules", "verify", "--config-dir", dir); code != ExitOK {
+				t.Errorf("%s block %d: code %d\n%s%s", p, i, code, out, errOut)
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if n == 0 {
+		t.Error("found no CUE examples in the docs")
+	}
+}
+
+// dedent removes the indentation that Markdown list items add to a block.
+func dedent(s string) string {
+	lines := strings.Split(s, "\n")
+	prefix := ""
+	for _, l := range lines {
+		if strings.TrimSpace(l) == "" {
+			continue
+		}
+		lead := l[:len(l)-len(strings.TrimLeft(l, " "))]
+		if prefix == "" || len(lead) < len(prefix) {
+			prefix = lead
+		}
+	}
+	for i, l := range lines {
+		lines[i] = strings.TrimPrefix(l, prefix)
+	}
+	return strings.Join(lines, "\n")
 }

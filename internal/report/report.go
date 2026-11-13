@@ -41,6 +41,7 @@ type jsonFinding struct {
 	Column      int            `json:"column"`
 	EndLine     int            `json:"endLine"`
 	Fingerprint string         `json:"fingerprint"`
+	KeyPath     string         `json:"keyPath,omitempty"`
 	Secret      string         `json:"secret"`
 	Redacted    bool           `json:"redacted"`
 }
@@ -71,7 +72,7 @@ func JSON(w io.Writer, res *scan.Result, o Options) error {
 		rep.Findings = append(rep.Findings, jsonFinding{
 			RuleID: f.RuleID, Description: f.Description, Severity: f.Severity,
 			Path: f.Path, Line: f.Line, Column: f.Column, EndLine: f.EndLine,
-			Fingerprint: f.Fingerprint, Secret: secretText(f, o), Redacted: !o.NoRedact,
+			Fingerprint: f.Fingerprint, KeyPath: f.KeyPath, Secret: secretText(f, o), Redacted: !o.NoRedact,
 		})
 	}
 	enc := json.NewEncoder(w)
@@ -99,6 +100,9 @@ func Text(w io.Writer, res *scan.Result, o Options) error {
 		}
 		p.printf("%s  %s  %s:%d:%d\n", sev, f.RuleID, f.Path, f.Line, f.Column)
 		p.printf("          %s\n", f.Description)
+		if f.KeyPath != "" {
+			p.printf("          key: %s\n", f.KeyPath)
+		}
 		p.printf("          secret: %s\n", secretText(f, o))
 		p.printf("          fingerprint: %s\n\n", f.Fingerprint)
 	}

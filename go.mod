@@ -7,6 +7,7 @@ require (
 	github.com/bmatcuk/doublestar/v4 v4.10.4
 	github.com/petar-dambovaliev/aho-corasick v0.0.0-20250424160509-463d218d4745
 	github.com/spf13/cobra v1.10.2
+	go.yaml.in/yaml/v3 v3.0.4
 )
 
 require (
@@ -18,7 +19,6 @@ require (
 	github.com/pelletier/go-toml/v2 v2.3.1 // indirect
 	github.com/protocolbuffers/txtpbfmt v0.0.0-20260420112717-c39628bde8b5 // indirect
 	github.com/spf13/pflag v1.0.10 // indirect
-	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/net v0.56.0 // indirect
 	golang.org/x/text v0.38.0 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect

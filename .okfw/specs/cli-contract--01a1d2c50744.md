@@ -60,3 +60,5 @@ Milestone 2: `whac scan [path]` with `--format text|json`, `--no-redact` and `--
 - Redaction: the first and last four characters of a single-line secret with 16 or more characters; `****` for other secrets.
 - Columns count characters (runes) and start at 1.
 - Unreadable files do not stop a scan. The summary counts them.
+
+Milestone 3: JSON findings of assignment rules carry `keyPath`. The text report prints it as `key:`.

@@ -37,10 +37,10 @@ Tracking: [ISSUE-002](.okfw/issues/issue-002-scan-engine-filesystem-source-finge
 
 ## Milestone 3 — Structure-aware scanning
 Tracking: [ISSUE-003](.okfw/issues/issue-003-structure-aware-scanning-and-assignment-rules--01a1d2c507c5.md)
-- [ ] Extractors: YAML, JSON, dotenv, properties/ini, HCL-lite; generic line extractor
-- [ ] `assignment` rules: `keyContext`, `paths`, `config.sensitivePaths`
-- [ ] Placeholder filter; zero-escape entropy trap with safe-format exclusions
-- [ ] Corpus additions; docs pages
+- [x] Extractors: YAML, JSON, dotenv, properties/ini, HCL-lite; generic line extractor
+- [x] `assignment` rules: `keyContext`, `paths`, `config.sensitivePaths`
+- [x] Placeholder filter; zero-escape entropy trap with safe-format exclusions
+- [x] Corpus additions; docs pages
 
 ## Milestone 4 — Staged and git-history scanning
 Tracking: [ISSUE-004](.okfw/issues/issue-004-staged-and-git-history-scanning--01a1d2c507cf.md)

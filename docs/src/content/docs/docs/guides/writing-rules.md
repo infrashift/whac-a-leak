@@ -97,8 +97,46 @@ fictional provider such as *Acme*.
 The loader skips the exported `schema.cue`. Run `whac rules export-schema`
 again after you upgrade whac.
 
-## Rule kinds
+## Assignment rules
 
-`kind` is `"pattern"` (the default) or `"assignment"`. Assignment rules
-evaluate key and value pairs from structured files. whac rejects assignment
-rules until Milestone 3.
+An assignment rule checks key/value pairs, not raw text. Set
+`kind: "assignment"`. Then set one or both selectors:
+
+* `keyContext`: a regex on the last key segment, for example `(?i)token`.
+* `paths`: key-path globs, for example `"**.credentials.password"`.
+
+When a rule sets both selectors, both must match. An optional `regex` runs on
+the value. Its `secretGroup` then holds the secret.
+
+```cue
+package whac
+
+rules: VAULT_TOKEN: {
+	description: "Vault token in a config file"
+	kind:        "assignment"
+	severity:    "HIGH"
+	keywords: ["vault"]
+	keyContext: "(?i)^vault_?token$"
+	tests: {
+		mustMatch: [{file: "app.yaml", content: "vault_token: EXAMPLE-s.Q9wv7Lm2Rt"}]
+		mustIgnore: [{file: "app.yaml", content: "vault_token: ${VAULT_TOKEN}"}]
+	}
+}
+```
+
+Keywords control where an assignment rule runs on unstructured text. Without
+keywords, the rule runs on structured files only. See
+[Structured Files](../structured-files/).
+
+## Samples with a file name
+
+A sample is a string or a struct with `file` and `content`. The file name
+selects the extractor. whac scans a string sample as an unstructured text
+file.
+
+```cue
+mustMatch: [
+	"token = acme_EXAMPLE0123456789abcdefghijklmno",
+	{file: "config.yaml", content: "acme:\n  token: acme_EXAMPLE0123456789abcdefghijklmno\n"},
+]
+```

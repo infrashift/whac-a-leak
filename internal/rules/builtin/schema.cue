@@ -7,6 +7,11 @@
 package whac
 
 #Severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL"
+
+// A rule sample: plain text, or text with a file name. The file name picks
+// the structural extractor, e.g. {file: "config.yaml", content: "..."}.
+// Plain text is scanned as an unstructured text file.
+#Sample: string | {file: string & !="", content: string}
 #Charset:  "hex" | "alnum" | "base64" | "base64url"
 
 #SecretRule: {
@@ -17,9 +22,12 @@ package whac
 	enabled:     *true | bool
 
 	// Literal keywords for the Aho-Corasick prefilter, matched
-	// case-insensitively. Pattern rules need at least one.
+	// case-insensitively. Pattern rules need at least one. An assignment rule
+	// runs on unstructured text only on lines that hold one of its keywords;
+	// without keywords it runs on structured files only.
 	keywords: [...(string & !="")]
-	// RE2 syntax (Go regexp). Required for pattern rules.
+	// RE2 syntax (Go regexp). Required for pattern rules. For an assignment
+	// rule it is optional and runs on the value.
 	regex?: string
 	// Capture group holding the secret; 0 means the whole match.
 	secretGroup: *1 | (int & >=0)
@@ -27,8 +35,9 @@ package whac
 	// multiline for secrets that span lines, such as PEM keys: the window then
 	// runs up to 64 KiB from the start of the keyword's line.
 	multiline: *false | bool
-	// Assignment rules (Milestone 3): a regex on the key name and/or
-	// doublestar globs over the dotted key path.
+	// Assignment rules: a regex on the last key segment and/or doublestar
+	// globs over the dotted key path ("**.credentials.password"). When a rule
+	// sets both, both must match. Path matching ignores case.
 	keyContext?: string
 	paths?: [...string]
 
@@ -48,10 +57,10 @@ package whac
 
 	tests: {
 		// Each sample must produce a finding. Use obviously fake values.
-		mustMatch: [string, ...string]
+		mustMatch: [#Sample, ...#Sample]
 		// Each sample must produce no finding (often: matches the regex but
-		// is rejected by entropy, stopwords or allowRegexes).
-		mustIgnore: [...string]
+		// is rejected by entropy, placeholders, stopwords or allowRegexes).
+		mustIgnore: [...#Sample]
 	}
 
 	if kind == "pattern" {
@@ -59,7 +68,7 @@ package whac
 		regex:    string
 		// Cheap author-side check under `cue vet`; the authoritative check
 		// runs every sample through the real engine (ADR-0009).
-		tests: mustMatch: [...=~regex]
+		tests: mustMatch: [...((string & =~regex) | {file: string, content: =~regex})]
 	}
 }
 
@@ -75,6 +84,9 @@ package whac
 	maxFileSize: *2097152 | (int & >0)
 	// Doublestar globs → reason.
 	exclude: [Glob=string]: string & !=""
+	// Key-path globs → reason. The builtin SENSITIVE_PATH rule reports any
+	// value at these paths in structured files, even with low entropy.
+	sensitivePaths: [Glob=string]: string & !=""
 }
 
 #Allowlist: {

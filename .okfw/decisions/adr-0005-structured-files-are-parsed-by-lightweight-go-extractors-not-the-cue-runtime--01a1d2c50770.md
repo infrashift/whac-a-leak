@@ -13,7 +13,7 @@ description: "Small Go extractors turn YAML, JSON, dotenv, properties/ini and HC
 
 # ADR-0005: Structured files are parsed by lightweight Go extractors, not the CUE runtime
 
-**Status:** Accepted
+**Status:** Accepted · Amendment 1 (2026-11-12): implementation details
 **Date:** 2026-11-12
 **Source:** Planning session
 
@@ -35,3 +35,13 @@ A line-based regex loses the key/value relationship in structured config. `datab
 
 ## Alternatives considered
 - **`cuelang.org/go/encoding/{yaml,json}` with a unification per file.** Too slow and too much memory. Rejected.
+
+## Amendment 1 (2026-11-12): implementation in Milestone 3
+- Extractors: YAML (yaml.v3 `Node`), JSON (token walker), dotenv, Java properties, INI (with sections), HCL-lite (quoted strings in nested blocks). `structural.Detect` picks the extractor from the file name.
+- A file that does not parse falls back to unstructured text.
+- On unstructured text, the generic extractor runs only on the lines that hold a keyword of an assignment rule. This keeps the line-window speed of [ADR-0013](/decisions/adr-0013-regexes-run-on-keyword-line-windows--01a1d2f04316.md). An assignment rule without keywords runs on structured files only.
+- The generic extractor skips comparisons (`==`, `===`, `!=`).
+- A rule with both `keyContext` and `paths` needs both to match. Path globs use `.` separators and ignore case.
+- Samples may carry a file name (`{file, content}`), so a rule can test its behavior on each format.
+- `config.sensitivePaths` is a map that layers extend. The builtin `SENSITIVE_PATH` rule builds its `paths` from it with a CUE comprehension.
+- The benchmark drops from 245 to 195 MB/s with the two builtin assignment rules.

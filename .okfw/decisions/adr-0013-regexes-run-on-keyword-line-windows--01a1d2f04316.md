@@ -37,3 +37,6 @@ description: "The engine runs a rule's regex only on the lines that hold one of 
 - **Regex over the whole content.** Rejected: 24 MB/s.
 - **Leftmost-longest prefilter (the gitleaks setting).** Rejected: an overlapping keyword can hide a rule.
 - **Detect multi-line regexes automatically.** Rejected: `\s` makes almost every regex look multi-line.
+
+## Amendment 1 (2026-11-12): one finding per span
+A pattern rule and an assignment rule can report the same value, for example `GENERIC_API_KEY` and `SECRET_ASSIGNMENT`. The scanner keeps one match per span: the higher severity, then the lower rule ID. A test compares the spans of the multi-rule scanner with the union of single-rule scans.

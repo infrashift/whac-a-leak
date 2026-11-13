@@ -22,6 +22,7 @@ you set `--config-dir` to a directory that does not exist.
 | Change the severity of a rule | `overrides: GENERIC_API_KEY: severity: "LOW"` |
 | Add stopwords to a rule without stopwords | `rules: GENERIC_API_KEY: stopwords: ["dummy"]` |
 | Exclude paths | `config: exclude: "vendor/**": "third-party code"` |
+| Add a sensitive key path | `config: sensitivePaths: "**.vault.unseal_key": "Vault unseal keys"` |
 | Allowlist a false positive | `allowlist: fingerprints: "whac1:<hex>": "test fixture"` |
 
 ## What a layer cannot do

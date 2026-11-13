@@ -40,6 +40,7 @@ export default defineConfig({
 						{ label: 'How Scanning Works', slug: 'docs/guides/how-scanning-works' },
 						{ label: 'Writing Rules', slug: 'docs/guides/writing-rules' },
 						{ label: 'Layering Org Policy', slug: 'docs/guides/layering' },
+						{ label: 'Structured Files', slug: 'docs/guides/structured-files' },
 						{ label: 'Allowlists & Fingerprints', slug: 'docs/guides/allowlists' },
 					],
 				},
