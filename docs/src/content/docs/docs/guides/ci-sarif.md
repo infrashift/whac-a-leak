@@ -25,7 +25,7 @@ therefore fails on a secret.
          - uses: actions/setup-go@v7
            with:
              go-version: "1.25"
-         - run: go install github.com/infrashift/whac-a-leak/cmd/whac@v0.1.0
+         - run: go install github.com/infrashift/whac-a-leak/cmd/whac@v0.2.0
          - name: Scan the history
            run: whac scan --git .
          - name: Scan the work tree for code scanning

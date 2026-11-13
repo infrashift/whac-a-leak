@@ -18,7 +18,7 @@ as one tested commit, together with the docs pages for its features.
 | **6. Agent-context preflight** | `whac scan --agent-context`: environment variables, well-known credential files (SSO caches, CLI configs, shell history), credential-socket exposure, opt-in IMDS probe | Done |
 | **Release v0.1.0** | Archives for Linux and macOS (amd64, arm64), `SHA256SUMS`, build provenance, Apache 2.0 license | Done |
 | **7. Report files** | `whac scan --output FORMAT=PATH`: text on the screen and JSON or SARIF files from one scan | Done |
-| **Release v0.2.0** | Report files | In progress |
+| **Release v0.2.0** | Report files (`--output`) | Done |
 
 ## Outside the v1 scope
 

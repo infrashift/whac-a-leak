@@ -14,7 +14,7 @@ already in the repository does not block the commit.
    ```yaml
    repos:
      - repo: https://github.com/infrashift/whac-a-leak
-       rev: v0.1.0
+       rev: v0.2.0
        hooks:
          - id: whac
    ```
