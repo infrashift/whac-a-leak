@@ -18,9 +18,9 @@ description: "Milestone 4: --staged pre-commit mode and --git history mode with 
 **Status/Milestone:** Open · Milestone 4
 
 ## Acceptance Criteria
-- [ ] `whac scan --staged`: added-line ranges from `git diff --cached -U0`; staged blobs scanned in full; only added-line findings reported.
-- [ ] `whac scan --git [range]`: streaming `git log -p -U0` parser; commit/author/date attribution; dedup by (fingerprint, path) to the earliest commit.
-- [ ] Handles renames, deletions, binary diffs, CRLF and very large histories without buffering everything.
-- [ ] Tests build throwaway repos in `t.TempDir()`.
-- [ ] `.pre-commit-hooks.yaml` shipped.
+- [ ] `whac scan --staged`: `git diff --cached -U0` supplies the added-line ranges. whac scans the full staged blobs and reports only findings on added lines.
+- [ ] `whac scan --git [range]`: a streaming `git log -p -U0` parser. Commit, author and date attribution. Deduplication by (fingerprint, path), with the earliest commit kept.
+- [ ] The parser handles renames, deletions, binary diffs, CRLF and large histories. It does not buffer the full history.
+- [ ] Tests build temporary repos in `t.TempDir()`.
+- [ ] The repo contains a `.pre-commit-hooks.yaml`.
 - [ ] Docs: *Pre-commit Hook*, *Scanning Git History*.

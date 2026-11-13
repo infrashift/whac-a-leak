@@ -9,7 +9,7 @@ tags:
   - "build"
 created: "2026-11-12T20:38:10-06:00"
 timestamp: "2026-11-12T20:38:10-06:00"
-description: "whac is a single static pure-Go binary (CGO_ENABLED=0) whose command surface is built with spf13/cobra."
+description: "whac is a single static pure-Go binary (CGO_ENABLED=0) with a command surface built on spf13/cobra."
 ---
 
 # ADR-0002: Pure Go with CGO_ENABLED=0 and a Cobra CLI
@@ -19,28 +19,28 @@ description: "whac is a single static pure-Go binary (CGO_ENABLED=0) whose comma
 **Source:** Planning session
 
 ## Context
-A secret scanner runs everywhere code lives: developer laptops, pre-commit hooks, CI runners, minimal containers. It has to be one download with no shared libraries. The command surface is small, but it has nested subcommands (`rules verify`, `allow add`), and users expect help and shell completion.
+A secret scanner runs on developer laptops, in pre-commit hooks, on CI runners and in minimal containers. It must ship as one download with no shared libraries. The command surface is small but has nested subcommands (`rules verify`, `allow add`). Users expect help and shell completion.
 
 ## Decision
-- Build with `CGO_ENABLED=0` (set in the `Makefile`). The only exception is `make test`, because the race detector needs cgo.
-- Use `github.com/spf13/cobra` for the CLI. It lives in `internal/cli`; `cmd/whac/main.go` is a thin `main`.
-- Standard layout: `cmd/` + `internal/`, and no `pkg/` until a public API is deliberately designed.
-- Git is driven through the `git` binary (`os/exec`), not a Go git library. Any machine with a repo to scan has git.
+- Build with `CGO_ENABLED=0`. The `Makefile` sets it. `make test` is the only exception, because the race detector needs cgo.
+- Use `github.com/spf13/cobra` for the CLI in `internal/cli`. Keep `cmd/whac/main.go` a thin `main`.
+- Use the standard layout: `cmd/` and `internal/`. Add no `pkg/` until a public API exists by design.
+- Run git through the `git` binary (`os/exec`), not a Go git library. A machine with a repo to scan has git.
 
 ## Consequences
-- Static binaries cross-compile easily for every target.
-- Cobra adds `spf13/pflag` to the dependency tree. That's accepted in exchange for help, completion and a familiar UX.
-- No cgo means no hyperscan/vectorscan. Speed comes from the Aho-Corasick prefilter (ADR-0003).
+- Static binaries cross-compile for every target.
+- Cobra adds `spf13/pflag` to the dependency tree. The project accepts this cost for help, completion and a familiar interface.
+- Without cgo, hyperscan and vectorscan are not available. The Aho-Corasick prefilter supplies the speed (ADR-0003).
 
 ## Alternatives considered
-- **stdlib `flag` with a hand-rolled dispatcher.** Lighter, but loses completion and consistent help. Rejected by the maintainer.
-- **go-git.** A large dependency that's slower than the git CLI on big histories. Rejected.
+- **stdlib `flag` with a custom dispatcher.** Lighter, but no completion and no consistent help. The maintainer rejected it.
+- **go-git.** A large dependency, slower than the git CLI on large histories. Rejected.
 
 See [CLI contract](/specs/cli-contract--01a1d2c50744.md).
 
 ## Amendment 1 (2026-11-12): the binary is `whac`
-The CLI was first planned as `wal`, but pywal, a popular Linux theming tool, already installs a `wal` binary, and the two would clash on `$PATH`. The binary is **`whac`** (`cmd/whac`), and every user-facing identifier follows it so the names stay consistent:
-- config directory: `.whac/`
+The first plan named the CLI `wal`. pywal, a popular Linux theming tool, already installs a `wal` binary. The two names collide on `$PATH`. The binary is **`whac`** (`cmd/whac`). Every user-facing identifier uses the same name:
+- config dir: `.whac/`
 - CUE package: `package whac`
 - fingerprint prefix: `whac1:`
 - inline suppression: `whac:ignore`

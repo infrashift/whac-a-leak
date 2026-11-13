@@ -3,112 +3,125 @@ title: Design Decisions
 description: The architecture decisions behind Whac-a-Leak, summarized from its ADRs.
 ---
 
-Each decision is recorded in full as an ADR in the project's OKF wiki
-(`.okfw/decisions/`). This page summarizes them.
+The project OKF wiki (`.okfw/decisions/`) records each decision in full as an
+ADR. This page gives a summary of each ADR.
 
 ## ADR-0001: An OKF wiki for project knowledge
 
-Architecture notes, specs, ADRs, issues and daily notes live in an
-[okfw](https://github.com/infrashift/okf-wiki)-managed wiki that is committed
-with the code. Agents reach it through the `okfw mcp` server registered in
-`.mcp.json`. The wiki is for the people building whac; this site is for the
-people using it.
+An [okfw](https://github.com/infrashift/okf-wiki) wiki holds architecture
+notes, specs, ADRs, issues and daily notes. The repository includes the wiki.
+Agents read it through the `okfw mcp` server in `.mcp.json`. The wiki serves
+contributors. This site serves users.
 
 ## ADR-0002: Pure Go, `CGO_ENABLED=0`, a Cobra CLI
 
 A secret scanner runs on laptops, in pre-commit hooks, on CI runners and in
-minimal containers, so it ships as one static binary. The CLI uses Cobra for
-consistent help and shell completion. Git is driven through the `git` binary
-rather than a Go git library, because anything with a repository to scan
-already has git.
+minimal containers. whac ships as one static binary. The CLI uses Cobra for
+consistent help and shell completion. whac runs the `git` binary, not a Go git
+library. A machine with a repository to scan has git.
 
-The binary is `whac`, not `wal`: pywal, a popular Linux theming tool, already
-installs a `wal` binary. The config directory (`.whac/`), CUE package,
-fingerprint prefix (`whac1:`) and inline marker (`whac:ignore`) follow it.
+The binary is `whac`, not `wal`. pywal, a popular Linux theming tool, already
+installs a `wal` binary. The config dir (`.whac/`), the CUE package, the
+fingerprint prefix (`whac1:`) and the inline marker (`whac:ignore`) use the
+same name.
 
 ## ADR-0003: CUE at load time only
 
-Rules are CUE, but scanning is plain Go. At startup, the embedded schema,
-default rules and your `.whac/` layers are unified, validated and decoded into
-Go structs, then compiled into regexes and an Aho-Corasick keyword automaton.
-CUE is never evaluated per file, line or match: that would cost orders of
-magnitude in throughput.
+Rules are CUE. The scan is plain Go. At startup, the loader unifies the embedded
+schema, the builtin rules and your `.whac/` layers. It validates the result and
+decodes it into Go structs. Then it compiles regexes and an Aho-Corasick keyword
+automaton. whac never evaluates CUE per file, line or match. That costs orders
+of magnitude in throughput.
 
 ## ADR-0004: Rules keyed by ID, layered with defaults
 
-CUE unification can only *add* information, never remove it. Rules therefore
-live in a map keyed by ID, and the fields you would want to override use CUE
-defaults:
+CUE unification only *adds* information. It never removes information. A map
+keyed by ID therefore holds the rules. A builtin rule sets a concrete
+severity, so a layer cannot change it through `rules`. The `overrides` map
+disables or re-grades a rule:
 
 ```cue
-rules: GENERIC_API_KEY: enabled: false      // turn a rule off
-rules: AWS_ACCESS_KEY: severity: "CRITICAL"  // re-grade it
+overrides: GENERIC_API_KEY: enabled: false     // disable a rule
+overrides: AWS_ACCESS_KEY_ID: severity: "LOW"  // re-grade a rule
 ```
 
-To loosen a regex, disable the rule and add your own under a new ID. Two
-layers that set conflicting values fail loudly, naming both sources.
+To loosen a regex, disable the rule and add your own rule with a new ID. If two
+layers set conflicting values, the load fails. The error names both sources.
+Allowlist entries and exclusions are maps, so two layers can each add entries.
 
-## ADR-0005: Lightweight extractors for structured files
+## ADR-0005: Small extractors for structured files
 
-YAML, JSON, `.env`, properties/ini and HCL-style files are turned into
-positioned `(key path, value)` pairs by small Go parsers. `assignment` rules
-match key names and sensitive paths such as `**.credentials.password`. A
-placeholder filter keeps `${DB_PASSWORD}`, `changeme` and `<your-token>` out of
-your results. Parsing every config file through the CUE runtime was considered
-and rejected as too slow.
+Small Go parsers turn YAML, JSON, `.env`, properties/ini and HCL-style files
+into positioned `(key path, value)` pairs. `assignment` rules match key names
+and sensitive paths such as `**.credentials.password`. A placeholder filter
+removes `${DB_PASSWORD}`, `changeme` and `<your-token>` from the results. A
+parse of every config file through the CUE runtime is too slow. The project
+rejected it.
 
 ## ADR-0006: Charset-aware entropy
 
-Shannon entropy per character can never exceed log₂ of the alphabet size: 4.0
-bits for hex, 6.0 for base64. A single global threshold such as 4.3 can
-therefore never flag a hex key. whac classifies each candidate's character set
-and applies a matching threshold and minimum length.
+The alphabet size limits Shannon entropy per character to log₂ of that size:
+4.0 bits for hex, 6.0 for base64. A global threshold such as 4.3 therefore
+never flags a hex key. Length also limits entropy: a 20-character string
+reaches at most 4.32. Without an explicit minimum, whac uses
+`0.75 × log2(min(length, alphabet size))`.
 
 ## ADR-0007: Fingerprints and allowlists
 
-A finding's identity is `whac1:` + SHA-256 of `rule_id ‖ 0x00 ‖ secret`, with
-no path or line number, so allowlist entries survive rebases. SHA-256 needs no
-extra dependency. An HMAC key would have to be shared with every developer and
-CI job, so it would add nothing. **Allowlists are for false positives only**:
-a committed hash of a short real password could be brute-forced. Real secrets
-get rotated, never allowlisted.
+A finding's identity is `whac1:` + SHA-256 of `rule_id ‖ 0x00 ‖ secret`. The
+fingerprint contains no path and no line number, so allowlist entries survive
+rebases. SHA-256 needs no extra dependency. Every developer and CI job needs an
+HMAC key, so an HMAC adds nothing.
+
+**Allowlists hold false positives only.** An attacker can brute-force a
+committed hash of a short real password. Rotate real secrets. Do not allowlist
+them.
 
 ## ADR-0008: No live secret verification in v1
 
-whac never calls a provider API to check whether a credential works, and never
-transmits a candidate secret. It runs the same in air-gapped CI as on a laptop.
+whac never calls a provider API to test a credential. It never transmits a
+candidate secret. It behaves the same in air-gapped CI and on a laptop.
 
-## ADR-0009: Rule tests run through the real engine
+## ADR-0009: The engine runs the rule samples
 
-`cue vet` checks each rule's `mustMatch` samples against its regex, which
-gives rule authors a quick check without the binary. The authoritative check
-runs in Go: every sample goes through the same pipeline as a real scan, every
-time rules load. A pure-CUE `mustIgnore` check would be wrong, because many
-ignore samples are *meant* to match the regex and then be rejected by entropy
-or placeholder filters.
+`cue vet` checks each rule's `mustMatch` samples against its regex. Rule
+authors get a fast check without the binary. The Go engine runs the
+authoritative check. At every load, each sample goes through the same pipeline
+as a real scan.
+
+A `mustIgnore` check in CUE alone is wrong. Many ignore samples match the regex
+on purpose. Entropy or placeholder filters then reject them.
 
 ## ADR-0010: Starlight docs on GitHub Pages
 
-This site is Astro Starlight, built with bun and deployed to GitHub Pages by
-`.github/workflows/docs-release.yml`. Pull requests build the site, and pushes
-to `main` deploy it. Each milestone ships the docs for the features it
-delivers.
+This site uses Astro Starlight. bun builds it.
+`.github/workflows/docs-release.yml` deploys it to GitHub Pages. Pull requests
+build the site. Pushes to `main` deploy it. Each milestone adds the docs for
+its features. All documentation follows ASD-STE100 Simplified Technical
+English.
 
 ## ADR-0011: Agent-context preflight
 
-Coding agents can read whatever their process can reach. `whac scan
---agent-context` audits exactly that:
+A coding agent reads everything its process can reach. `whac scan
+--agent-context` audits that:
 
-- **Environment variables**, scanned as `env.<NAME>` key paths.
+- **Environment variables**, as `env.<NAME>` key paths.
 - **Well-known credential files** under `$HOME` and mounted roots: AWS SSO
   cache, gcloud ADC, Azure MSAL, `gh`, Docker, kube, `.npmrc`, `.netrc`,
-  `.git-credentials` and shell history. The list is declared in CUE, so
+  `.git-credentials` and shell history. CUE declares the list, so
   organizations can extend it.
 - **Exposure checks**: a connectable `SSH_AUTH_SOCK` or an accessible
-  `docker.sock`. Probing the cloud metadata endpoint is opt-in
-  (`--probe-imds`), and it is the only network call whac ever makes.
+  `docker.sock`. The cloud metadata endpoint (IMDS) check is opt-in
+  (`--probe-imds`). It is the only network call whac makes.
 
-Values are never printed. It runs as a preflight gate at devcontainer or
-microVM startup and exits 1 if anything is reachable. Process memory is
-deliberately out of scope: reading it needs ptrace or root and looks
-exactly like credential-dumping malware.
+whac never prints values. Run the command as a preflight gate at devcontainer
+or microVM startup. It exits 1 when a credential is reachable. Process memory
+is out of scope. Access to it needs ptrace or root. Security tools cannot tell
+it apart from credential-dumping malware.
+
+## ADR-0012: One in-memory CUE build instance
+
+The loader parses the builtin files and each layer, then builds them as one
+CUE package in memory. It needs no `cue.mod` and no files on disk. Layers can
+refer to schema definitions such as `#SecretRule`. The loader skips a schema
+copy from `whac rules export-schema`, so a stale copy never conflicts.

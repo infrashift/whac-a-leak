@@ -8,7 +8,7 @@ tags:
   - "performance"
 created: "2026-11-12T20:38:10-06:00"
 timestamp: "2026-11-12T20:38:10-06:00"
-description: "YAML, JSON, dotenv, properties/ini and HCL-style files are turned into positioned (keyPath, value) assignments by small Go extractors; CUE only declares which key paths are sensitive."
+description: "Small Go extractors turn YAML, JSON, dotenv, properties/ini and HCL-style files into positioned key-path and value pairs; CUE only declares sensitive key paths."
 ---
 
 # ADR-0005: Structured files are parsed by lightweight Go extractors, not the CUE runtime
@@ -18,20 +18,20 @@ description: "YAML, JSON, dotenv, properties/ini and HCL-style files are turned 
 **Source:** Planning session
 
 ## Context
-Line-based regex loses the key/value relationship in structured config. `database.credentials.password: hunter2` has no prefix and low entropy. The original idea was to ingest every YAML/JSON file into CUE and unify it with a "sensitive path" schema. The CUE decoders are much heavier than the scan budget allows, and a unification failure is a poor way to report a positioned finding.
+A line-based regex loses the key/value relationship in structured config. `database.credentials.password: hunter2` has no prefix and low entropy. The first idea was to load every YAML/JSON file into CUE and unify it with a "sensitive path" schema. The CUE decoders cost far more than the scan budget allows. A unification failure also reports a positioned finding badly.
 
 ## Decision
-- `internal/structural` extractors emit `Assignment{KeyPath, Value, Line, Col}`:
-  - YAML via yaml.v3 `Node` (positions included; the same module CUE already depends on)
-  - JSON via a `json.Decoder` token walker using `InputOffset`
-  - hand-written lexers for dotenv, properties/ini and HCL-style `k = "v"` lines (no HCL dependency)
-- `assignment` rules match on `keyContext` (a regex on the last key segment) and/or `paths` (doublestar globs over the dotted key path), then check the value.
-- Files without an extractor go through a generic `key = value` / `key: value` line regex, which feeds the same assignment rules.
-- A placeholder filter (`${VAR}`, `{{ }}`, `<...>`, `changeme`, `xxxx`, repeated characters, empty values) runs before any assignment finding.
+- `internal/structural` extractors produce `Assignment{KeyPath, Value, Line, Col}`:
+  - YAML through yaml.v3 `Node`, which keeps positions. CUE already depends on this module.
+  - JSON through a `json.Decoder` token walker that uses `InputOffset`.
+  - Small custom lexers for dotenv, properties/ini and HCL-style `k = "v"` lines. No HCL dependency.
+- `assignment` rules match on `keyContext` (a regex on the last key segment), on `paths` (doublestar globs over the dotted key path), or on both. Then they check the value.
+- Files without an extractor go through a generic `key = value` / `key: value` line regex. Its output feeds the same assignment rules.
+- A placeholder filter runs before any assignment finding. It drops `${VAR}`, `{{ }}`, `<...>`, `changeme`, `xxxx`, repeated characters and empty values.
 
 ## Consequences
-- Low-entropy secrets in sensitive paths are caught without flooding the output.
-- In git-history mode, hunks are partial, so structured parsing is skipped there and only the line-level fallback runs.
+- whac finds low-entropy secrets in sensitive paths without noise.
+- Git-history mode has only partial hunks. It skips structured parsing and runs only the line-level fallback.
 
 ## Alternatives considered
-- **`cuelang.org/go/encoding/{yaml,json}` + unify per file.** Too slow and memory-heavy. Rejected.
+- **`cuelang.org/go/encoding/{yaml,json}` with a unification per file.** Too slow and too much memory. Rejected.

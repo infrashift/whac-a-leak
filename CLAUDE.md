@@ -1,45 +1,57 @@
 # CLAUDE.md — Whac-a-Leak secret scanner
 
 ## Purpose (WHY)
-Whac-a-Leak (`whac`) is a lightweight, pure-Go secret scanner. Its detection rules are written in CUE: typed, layered by organization policy, and self-testing, since every rule ships its own positive and negative samples. CUE is used only **at load time**, to unify, validate and decode rules, which then compile into Go matchers. Scanning (Aho-Corasick prefilter → regex → entropy/charset → filters → allowlist) is plain Go. Sources: filesystem, staged changes (pre-commit), git history and, for agent-context preflight, environment variables and well-known credential files (ADR-0011; never process memory). Outputs: text, JSON, SARIF.
+Whac-a-Leak (`whac`) is a pure-Go secret scanner. CUE defines its rules. Each rule has a type, organization layers and its own samples.
+
+- CUE runs **only at load time**. The loader unifies, validates and decodes the rules, then compiles them into Go matchers.
+- The scan is plain Go: Aho-Corasick prefilter → regex → entropy/charset → filters → allowlist.
+- Sources: filesystem, staged changes (pre-commit), git history.
+- Agent-context preflight sources: environment variables and well-known credential files (ADR-0011). whac never scans process memory.
+- Outputs: text, JSON, SARIF.
 
 ## Tech Stack & Pinned Libraries (WHAT)
-- **Language:** Go 1.25+ with `CGO_ENABLED=0` (strictly pure Go, no cgo).
-- **Rules & config:** `cuelang.org/go` (CUE Go API, v0.17.x).
+- **Language:** Go 1.25+ with `CGO_ENABLED=0`. Pure Go, no cgo.
+- **Rules and config:** `cuelang.org/go` (CUE Go API, v0.17.x).
 - **CLI:** `github.com/spf13/cobra`.
 - **Keyword prefilter:** `github.com/petar-dambovaliev/aho-corasick`.
 - **Path globs:** `github.com/bmatcuk/doublestar/v4`.
-- **YAML positions:** the yaml.v3 module that `cuelang.org/go` already depends on.
-- Git is driven through the `git` binary (`os/exec`), not a Go git library.
-- Docs: Astro Starlight in `docs/` (bun 1.3.9), deployed to GitHub Pages.
+- **YAML positions:** the yaml.v3 module that `cuelang.org/go` already uses.
+- **Git:** the `git` binary through `os/exec`. No Go git library.
+- **Docs:** Astro Starlight in `docs/` (bun 1.3.9), deployed to GitHub Pages.
 
 ## Layout
-`cmd/whac/` holds only a thin `main` that calls `internal/cli`. All logic lives in `internal/` (`cli`, `rules`, `engine`, `structural`, `source`, `allow`, `fingerprint`, `report`). There is no `pkg/` until a public Go API is deliberately designed. Embedded CUE (`//go:embed`) lives next to the package that embeds it (`internal/rules/schema`, `internal/rules/defaults`).
+- `cmd/whac/` holds only a thin `main` that calls `internal/cli`.
+- `internal/` holds all logic: `cli`, `rules`, `engine`, `structural`, `source`, `allow`, `fingerprint`, `report`.
+- Add no `pkg/` until a public Go API exists by design.
+- Embedded CUE (`//go:embed`) sits next to the package that embeds it: `internal/rules/builtin/`.
 
 ## Verification & Workflow Commands (HOW)
-Run these through GNU Make after every code change:
+Run these GNU Make targets after every code change:
 - `make test`     → `go test -race ./...`
-- `make vet-cue`  → `cue vet ./internal/rules/...`
+- `make vet-cue`  → `cue vet` on the embedded schema and builtin rules
 - `make lint`     → `golangci-lint run` + `go mod tidy -diff`
 - `make build`    → `CGO_ENABLED=0 go build -o bin/whac ./cmd/whac`
 - `make bench`    → engine and rule-load benchmarks
 - `make wiki`     → `okfw validate --all && okfw validate --okf`
-- `make docs-build` → build the Starlight site (what the Pages deploy runs)
+- `make docs-style` → `scripts/ste-check.py`: ASD-STE100 check of the documentation
+- `make docs-build` → build the Starlight site (the same build as the Pages deploy)
 
 ## Mandatory Execution Rules
-1. **Work One Phase at a Time:** Read `PLAN.md`, implement only the current unchecked milestone, run `make test && make vet-cue && make lint`, tick the milestone's checkboxes in `PLAN.md`, and stop for a commit.
-2. **Test Integrity:** Never weaken or delete existing tests (or a rule's `tests.mustMatch` / `tests.mustIgnore` samples) to make a failing implementation pass.
-3. **CUE Stays Out of the Hot Path:** CUE is evaluated only while rules load. Never call the CUE runtime per file, per line or per match (ADR-0003).
-4. **Minimal Abstractions:** Keep the `cmd/` + `internal/` layout. Don't add unrequested interfaces, factory patterns, or third-party dependencies outside the pinned list; a new dependency needs an ADR first.
-5. **No Real Secrets, Anywhere:** Test samples, fixtures and docs demos use values that cannot be real credentials (`EXAMPLE` markers, invalid checksums). Never paste a scanned secret into output, logs, commits or the wiki; refer to findings by fingerprint.
-6. **Keep the Wiki and Docs in Sync:** Each `PLAN.md` milestone has a mirror issue in `.okfw/issues/` (linked from its `Tracking:` line). When a milestone is done:
-   - Tick the issue's acceptance criteria and add a **Resolution** section.
+1. **One milestone at a time.** Read `PLAN.md`. Implement only the first unchecked milestone. Run `make test && make vet-cue && make lint`. Tick the `PLAN.md` checkboxes, then commit.
+2. **Test integrity.** Do not weaken or delete tests or rule samples (`tests.mustMatch`, `tests.mustIgnore`) to make a gate pass.
+3. **No CUE in the hot path.** CUE runs only while rules load. Do not call the CUE runtime per file, line or match (ADR-0003).
+4. **Minimal abstractions.** Keep the `cmd/` + `internal/` layout. Add no unrequested interfaces or factories. Write an ADR before you add a dependency outside the pinned list.
+5. **No real secrets.** Samples, fixtures and docs demos use values that cannot be real credentials: `EXAMPLE` markers, invalid checksums.
+6. **No scanned secrets in output.** Do not paste a scanned secret into output, logs, commits or the wiki. Identify a finding by its fingerprint.
+7. **Wiki and docs stay in sync.** Each `PLAN.md` milestone has a mirror issue in `.okfw/issues/`. Its `Tracking:` line links to the issue. When a milestone is done:
+   - Tick the issue's acceptance criteria. Add a **Resolution** section.
    - Swap the tag `in-progress` → `closed`.
    - Record new decisions as ADRs in `.okfw/decisions/`.
-   - Add or refresh the `docs/` pages for the features it delivered.
+   - Add or update the `docs/` pages for the delivered features.
    - Run `make wiki`.
 
-   Conventions: `.okfw/` *Wiki conventions* guide.
+   Conventions: the *Wiki conventions* guide in `.okfw/`.
+8. **Documentation follows ASD-STE100 (Simplified Technical English).** Use active voice, simple present tense and short sentences. Run `make docs-style`.
 
 <!-- BEGIN okfw -->
 ## Project knowledge base (okfw)

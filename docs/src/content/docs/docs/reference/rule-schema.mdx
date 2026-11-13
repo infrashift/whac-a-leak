@@ -1,0 +1,34 @@
+---
+title: Rule Schema
+description: The CUE schema that every rule and layer unifies with.
+---
+
+import { Code } from '@astrojs/starlight/components';
+import schema from '../../../../../../internal/rules/builtin/schema.cue?raw';
+
+whac embeds this schema in the binary. This page shows the file
+`internal/rules/builtin/schema.cue` from the repository.
+
+## Top-level fields
+
+| Field | Type | Description |
+|---|---|---|
+| `rules` | map of `#SecretRule` | The rules. The field name is the rule ID. |
+| `overrides` | map of `#Override` | Disable or re-grade a rule by ID. |
+| `config` | `#Config` | Scan settings. |
+| `allowlist` | `#Allowlist` | Suppressions for false positives. |
+
+## `#SecretRule` defaults
+
+| Field | Default |
+|---|---|
+| `kind` | `"pattern"` |
+| `severity` | `"HIGH"` |
+| `enabled` | `true` |
+| `secretGroup` | `1` |
+| `entropy.minLen` | `16` |
+| `config.maxFileSize` | `2097152` (2 MiB) |
+
+## Schema source
+
+<Code code={schema} lang="cue" title="internal/rules/builtin/schema.cue" />

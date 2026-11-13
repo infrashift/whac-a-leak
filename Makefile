@@ -1,42 +1,39 @@
-.PHONY: all test vet-cue lint build bench wiki docs-dev docs-build clean
+.PHONY: all test vet-cue lint build bench wiki docs-style docs-dev docs-build clean
 
-GOBIN    := $(shell go env GOPATH)/bin
-GOLANGCI ?= $(GOBIN)/golangci-lint
+# golangci-lint runs through `go run` at a pinned version, so the current Go
+# toolchain builds it. A binary built with an older Go cannot type-check a newer
+# standard library.
+GOLANGCI ?= go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.15.0
 CUE      ?= cue
+
+PKG     := github.com/infrashift/whac-a-leak/internal/cli
+VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
+COMMIT  ?= $(shell git rev-parse HEAD 2>/dev/null || echo unknown)
+DATE    ?= $(shell date -u +%Y-%m-%dT%H:%M:%SZ)
+LDFLAGS := -s -w -X $(PKG).version=$(VERSION) -X $(PKG).commit=$(COMMIT) -X $(PKG).date=$(DATE)
 
 # Pure Go everywhere (ADR-0002). The one exception is `test`: Go's race
 # detector runtime needs cgo on Linux, so it turns cgo back on for that target only.
 export CGO_ENABLED := 0
 
-# True once the module contains at least one Go package (Milestone 1 onward).
-HAS_GO := $(shell test -n "$$(go list ./... 2>/dev/null)" && echo yes)
-
 all: lint test build
 
 ## test: unit tests with the race detector
 test:
-ifeq ($(HAS_GO),yes)
 	CGO_ENABLED=1 go test -race ./...
-else
-	@echo "test: no Go packages yet, skipping"
-endif
 
-## vet-cue: validate the embedded CUE schema and default rules
+## vet-cue: validate the embedded schema and builtin rules (concrete, incl. mustMatch samples)
 vet-cue:
-	@if [ -d internal/rules ]; then $(CUE) vet ./internal/rules/...; else echo "vet-cue: no internal/rules/ yet, skipping"; fi
+	$(CUE) vet -c ./internal/rules/builtin/
 
 ## lint: golangci-lint (strict config in .golangci.yml) plus a go mod tidy check
 lint:
-ifeq ($(HAS_GO),yes)
 	$(GOLANGCI) run
 	go mod tidy -diff
-else
-	@echo "lint: no Go packages yet, skipping"
-endif
 
-## build: static whac binary
+## build: static, stripped whac binary with version information
 build:
-	go build -trimpath -o bin/whac ./cmd/whac
+	go build -trimpath -ldflags "$(LDFLAGS)" -o bin/whac ./cmd/whac
 
 ## bench: engine throughput and rule-load benchmarks
 bench:
@@ -46,6 +43,10 @@ bench:
 wiki:
 	okfw validate --all
 	okfw validate --okf
+
+## docs-style: check the docs, README, PLAN.md, CLAUDE.md and wiki against ASD-STE100 rules
+docs-style:
+	python3 -I scripts/ste-check.py
 
 ## docs-dev: run the Astro Starlight site locally (bun)
 docs-dev:

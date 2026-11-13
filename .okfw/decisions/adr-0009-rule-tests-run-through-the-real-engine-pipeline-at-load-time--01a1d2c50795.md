@@ -9,7 +9,7 @@ tags:
   - "cue"
 created: "2026-11-12T20:38:10-06:00"
 timestamp: "2026-11-12T20:38:10-06:00"
-description: "Each rule's mustMatch and mustIgnore samples are executed by the Go engine whenever rules load, and a failure aborts loading; CUE checks mustMatch against the regex for rule authors."
+description: "The Go engine runs each rule's mustMatch and mustIgnore samples at every load, and a failure stops the load; CUE checks mustMatch against the regex for rule authors."
 ---
 
 # ADR-0009: Rule tests run through the real engine pipeline at load time
@@ -19,16 +19,21 @@ description: "Each rule's mustMatch and mustIgnore samples are executed by the G
 **Source:** Planning session
 
 ## Context
-Broken regexes and overly greedy patterns are the most common failures in custom rules. Embedding `tests.mustMatch` / `tests.mustIgnore` in each rule lets the ruleset verify itself. A pure-CUE check is incomplete. `mustMatch: [...=~regex]` works, but `mustIgnore: [...!~regex]` would be **wrong**: many ignore samples are meant to match the regex and then be rejected by entropy, stopwords or placeholders.
+Broken regexes and greedy patterns are the most common defects in custom rules. Samples in each rule (`tests.mustMatch`, `tests.mustIgnore`) let the rule set verify itself. A check in CUE alone is incomplete. `mustMatch: [...=~regex]` works. `mustIgnore: [...!~regex]` is **wrong**: many ignore samples match the regex on purpose. Entropy, stopwords or placeholders then reject them.
 
 ## Decision
-- In CUE, pattern rules constrain `tests.mustMatch: [...=~regex]`. That's a cheap check under `cue vet` with no binary.
-- In Go, every load (and `whac rules verify`) runs each sample through the same code path as a scan. A failure aborts loading with the rule ID, sample index and failing stage. The sample text is not printed.
-- `mustMatch` must be non-empty (`[string, ...string]`).
+- In CUE, pattern rules constrain `tests.mustMatch: [...=~regex]`. `cue vet` runs this fast check without the binary.
+- In Go, every load and `whac rules verify` run each sample through the scan code path. A failure stops the load. The error names the rule ID, the sample index and the failed stage. It does not print the sample text.
+- `mustMatch` must contain at least one sample (`[string, ...string]`).
 
 ## Consequences
-- Every rule has at least one executable example, which doubles as documentation.
-- Rule loading costs a little more at startup (counted in the ADR-0003 budget).
-- Sample secrets live in the repo, so they must be obviously fake. The repo's own `.whac/` allowlists `internal/rules/defaults/**`.
+- Every rule has at least one executable example. The example also documents the rule.
+- The sample run adds a small startup cost, inside the ADR-0003 budget.
+- The repository contains the samples, so they must be clearly fake. The repo's own `.whac/` allowlists `internal/rules/builtin/**`.
 
 See [Rule schema](/specs/rule-schema--01a1d2c50736.md).
+
+## Implementation note (Milestone 1)
+- `engine.Verify` runs the samples. It lives in `internal/engine`, not `internal/rules`, because the engine imports the compiled rules. This placement avoids an import cycle.
+- `rules.Load` only loads and compiles. Each command that needs rules calls `rules.Load` and then `engine.Verify`. A failed sample gives exit code 2.
+- A failure names the rule, the sample position (`mustMatch[0]`) and the last stage the sample reached: no keyword, no regex match, or the rejection reason. The failure never contains the sample text.

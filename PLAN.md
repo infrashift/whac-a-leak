@@ -1,6 +1,8 @@
 # PLAN.md — Whac-a-Leak (`whac`)
 
-One milestone at a time (`CLAUDE.md` rule 1). Each milestone has a mirror issue in the OKF wiki (`.okfw/issues/`). Tick **both** this checklist and the issue's acceptance criteria when a milestone is done. Loop: implement → `make lint vet-cue test` → repeat until green → update wiki + docs → `make wiki docs-build` → commit.
+Work on one milestone at a time (`CLAUDE.md` rule 1). Each milestone has a mirror issue in the OKF wiki (`.okfw/issues/`). When a milestone is done, tick this checklist and the issue's acceptance criteria.
+
+Loop: implement → `make lint vet-cue test` → repeat until green → update wiki and docs → `make wiki docs-style docs-build` → commit.
 
 Architecture: [.okfw/architecture/whac-a-leak-architecture-overview--01a1d2c507a8.md](.okfw/architecture/whac-a-leak-architecture-overview--01a1d2c507a8.md)
 
@@ -14,13 +16,13 @@ Architecture: [.okfw/architecture/whac-a-leak-architecture-overview--01a1d2c507a
 
 ## Milestone 1 — Rule schema, CUE loader, `rules verify`
 Tracking: [ISSUE-001](.okfw/issues/issue-001-rule-schema-cue-loader-and-rules-verify--01a1d2c507b1.md)
-- [ ] Cobra skeleton: `cmd/whac` → `internal/cli`; `whac version`
-- [ ] Spike: `cue/load` Overlay merging embedded files with user `.whac/`; `Decode` with default markers
-- [ ] `internal/rules/schema/schema.cue` (`#SecretRule`, `#Config`, `#Allowlist`)
-- [ ] ~5 seed rules in `internal/rules/defaults/` with tests
-- [ ] Loader, decode, compile → `CompiledRule`
-- [ ] `whac rules list`, `whac rules verify`
-- [ ] Layering / broken-rule / failing-sample tests; startup benchmark
+- [x] Cobra skeleton: `cmd/whac` → `internal/cli`; `whac version`
+- [x] Spike: an in-memory build instance replaces the `cue/load` Overlay (ADR-0012); `overrides` replaces re-grading through `rules` (ADR-0004 amendment)
+- [x] `internal/rules/builtin/schema.cue` (`#SecretRule`, `#Override`, `#Config`, `#Allowlist`)
+- [x] 5 builtin rules in `internal/rules/builtin/` with samples
+- [x] Loader, decode, compile → `rules.Rule`; `engine.Verify` with entropy and charset checks
+- [x] `whac rules list`, `whac rules verify`, `whac rules export-schema`
+- [x] Layering / conflict / broken-rule / failed-sample tests; startup benchmark (about 2 ms)
 
 ## Milestone 2 — Scan engine, filesystem source, fingerprints, allowlist
 Tracking: [ISSUE-002](.okfw/issues/issue-002-scan-engine-filesystem-source-fingerprints-and-allowlist--01a1d2c507bb.md)
@@ -48,7 +50,7 @@ Tracking: [ISSUE-004](.okfw/issues/issue-004-staged-and-git-history-scanning--01
 ## Milestone 5 — SARIF, default ruleset, CI, docs demo, polish
 Tracking: [ISSUE-005](.okfw/issues/issue-005-sarif-default-ruleset-ci-docs-demo-and-release-polish--01a1d2c507d9.md)
 - [ ] SARIF 2.1.0
-- [ ] ~30 default rules
+- [ ] About 30 builtin rules
 - [ ] `.github/workflows/ci.yml` with self-scan
 - [ ] `docs/src/demo/gen.go` landing-page demo; remaining docs; README; benchmarks
 
@@ -58,5 +60,5 @@ Tracking: [ISSUE-006](.okfw/issues/issue-006-agent-context-preflight-environment
 - [ ] `home` source: CUE-declared `config.credentialPaths` under `$HOME` + `--root` (AWS SSO cache, gcloud ADC, Azure MSAL, gh, docker, kube, npmrc, pypirc, netrc, git-credentials, shell histories)
 - [ ] Rules: `**.accessToken` / `**.refreshToken` paths, generic JWT, `*_TOKEN|_SECRET|_PASSWORD` env names
 - [ ] Exposure findings: `SSH_AUTH_SOCK`, `docker.sock`; opt-in `--probe-imds` (the one network call)
-- [ ] `whac scan --agent-context` preflight gate (exit 1, `--no-redact` ignored); no process-memory scanning
+- [ ] `whac scan --agent-context` preflight gate (exit 1, `--no-redact` has no effect); no process memory scan
 - [ ] Fake-`$HOME` / `t.Setenv` / temp-socket tests; *Agent-Context Preflight* docs guide (devcontainer + microVM examples)

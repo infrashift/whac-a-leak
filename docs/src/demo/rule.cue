@@ -1,7 +1,7 @@
 package whac
 
-// A rule for a fictional provider. Every rule carries its own tests:
-// if a sample misbehaves, whac refuses to load the ruleset.
+// A rule for a fictional provider. Each rule has samples.
+// whac stops the load if a sample gives the wrong result.
 rules: ACME_API_TOKEN: {
 	description: "Acme API token"
 	severity:    "CRITICAL"

@@ -35,8 +35,19 @@ export default defineConfig({
 					],
 				},
 				{
+					label: 'Guides',
+					items: [
+						{ label: 'Writing Rules', slug: 'docs/guides/writing-rules' },
+						{ label: 'Layering Org Policy', slug: 'docs/guides/layering' },
+					],
+				},
+				{
 					label: 'Reference',
-					items: [{ label: 'Make Targets', slug: 'docs/reference/make-targets' }],
+					items: [
+						{ label: 'CLI', slug: 'docs/reference/cli' },
+						{ label: 'Rule Schema', slug: 'docs/reference/rule-schema' },
+						{ label: 'Make Targets', slug: 'docs/reference/make-targets' },
+					],
 				},
 				{
 					label: 'Project',

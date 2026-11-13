@@ -9,7 +9,7 @@ tags:
   - "security"
 created: "2026-11-12T20:38:10-06:00"
 timestamp: "2026-11-12T20:38:10-06:00"
-description: "Findings are identified by whac1:SHA-256(rule_id || 0x00 || secret), which is stable across rebases; committed fingerprints are acceptable because allowlists only hold false positives."
+description: "A finding's identity is whac1:SHA-256(rule_id || 0x00 || secret). It survives rebases. Allowlists hold only false positives, so committed fingerprints are acceptable."
 ---
 
 # ADR-0007: Domain-separated SHA-256 fingerprints; allowlists are for false positives only
@@ -19,19 +19,19 @@ description: "Findings are identified by whac1:SHA-256(rule_id || 0x00 || secret
 **Source:** Planning session
 
 ## Context
-Baselines keyed by line number break on every rebase. Redacted-string baselines leak partial secrets. The proposal was a Blake2b or HMAC-SHA256 hash of `(rule_id + normalized_secret)`.
+A baseline keyed by line number breaks on every rebase. A baseline of redacted strings leaks part of each secret. The proposal was a Blake2b or HMAC-SHA256 hash of `(rule_id + normalized_secret)`.
 
 ## Decision
 - Fingerprint = `whac1:` + hex SHA-256 of `rule_id || 0x00 || secret`. See [Fingerprint format](/specs/fingerprint-format--01a1d2c5073d.md).
-- SHA-256 instead of BLAKE2b: it's in the standard library and hardware-accelerated, while BLAKE2b would add a dependency for no gain.
-- No HMAC: a key shared by every developer and CI job, so that allowlists stay portable, would be effectively public.
-- The allowlist (`.whac/*.cue` → `allowlist.fingerprints`) holds only false positives. Real secrets are rotated.
+- SHA-256, not BLAKE2b: the standard library has it with hardware acceleration. BLAKE2b adds a dependency with no gain.
+- No HMAC: every developer and CI job needs the key to keep allowlists portable, so the key is effectively public.
+- The allowlist (`allowlist.fingerprints` in `.whac/*.cue`) holds only false positives. Rotate real secrets.
 
 ## Consequences
-- A committed hash of a low-entropy real secret could be brute-forced. Documented and accepted, because real secrets must never be allowlisted.
-- Findings deduplicate by fingerprint across files and history.
+- An attacker can brute-force a committed hash of a low-entropy real secret. The docs state this risk. The project accepts it, because an allowlist must never hold a real secret.
+- whac deduplicates findings by fingerprint across files and history.
 
 ## Alternatives considered
-- **Line-number baselines.** Break on rebase. Rejected.
-- **HMAC with a per-repo key.** No security gain. Rejected.
+- **Baselines keyed by line number.** Break on rebase. Rejected.
+- **HMAC with a key per repo.** No security gain. Rejected.
 - **A slow KDF (argon2).** Slows scans and adds a dependency for a non-goal. Rejected.

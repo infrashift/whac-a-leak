@@ -16,6 +16,6 @@ okf_version: "0.2"
 
 ## Concepts
 
-* [Development workflow](development-workflow--01a1d2c50728.md) - The one-milestone-at-a-time implement, lint, verify (repeat until green), update-wiki-and-docs, commit loop for Whac-a-Leak.
-* [Wiki conventions](wiki-conventions--01a1d2c5072f.md) - Layout and authoring conventions for architecture notes, specs, ADRs, issues and daily notes in this wiki.
+* [Development workflow](development-workflow--01a1d2c50728.md) - The loop for each Whac-a-Leak milestone: implement, lint, verify until green, update the wiki and docs, then commit.
+* [Wiki conventions](wiki-conventions--01a1d2c5072f.md) - Layout, writing style and authoring rules for architecture notes, specs, ADRs, issues and daily notes in this wiki.
 
