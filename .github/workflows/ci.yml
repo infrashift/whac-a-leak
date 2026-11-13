@@ -30,10 +30,12 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      # Current stable Go: golangci-lint v2.15.0 needs Go 1.26 or newer. The
+      # go-min job covers the go.mod minimum.
       - name: Set up Go
         uses: actions/setup-go@v7
         with:
-          go-version-file: go.mod
+          go-version: stable
 
       - name: Install cue
         run: |
@@ -58,3 +60,22 @@ jobs:
         with:
           sarif_file: whac.sarif
           category: whac
+
+  go-min:
+    # Vet and test with the minimum Go version in go.mod.
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+
+      - name: Vet and test
+        run: |
+          go vet ./...
+          CGO_ENABLED=1 go test -race ./...
