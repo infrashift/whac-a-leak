@@ -67,3 +67,9 @@ Milestone 4: `whac scan --staged` and `whac scan --git[=<range>]` ([ADR-0014](/d
 - `--git` has an optional value, so a range needs `=`: `--git=main..HEAD`. A bare `--git` scans `HEAD`. Without `=`, the next word is the path; whac then hints at `--git=<range>`.
 - `--staged` and `--git` exclude each other. The path is a directory in the work tree. Paths in findings are relative to the repository root.
 - History findings carry `commit`, `author` (name only, no email) and `date`. The summary counts commits and file changes.
+
+Milestone 5: `--format sarif` (SARIF 2.1.0).
+- `tool.driver.rules` lists the enabled rules with `security-severity` (9.5, 8.0, 5.5, 3.0) and the level `error`, `warning` or `note`.
+- `partialFingerprints.whacFingerprint/v1` holds the `whac1:` fingerprint. History findings carry `commit`, `author` and `date` in `properties`.
+- SARIF always redacts secrets. `--no-redact` does not apply.
+- A test validates the output against the OASIS SARIF 2.1.0 JSON Schema, which `testdata/sarif/` vendors. CUE's `encoding/jsonschema` reads the schema, so the test needs no new dependency.

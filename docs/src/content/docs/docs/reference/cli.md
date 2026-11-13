@@ -24,7 +24,7 @@ description: The whac commands, flags and exit codes.
 
 | Flag | Default | Description |
 |---|---|---|
-| `--format` | `text` | `text` or `json`. See [Output Formats](../output-formats/). |
+| `--format` | `text` | `text`, `json` or `sarif`. See [Output Formats](../output-formats/). |
 | `--no-redact` | off | Print each secret in full. |
 | `--severity-threshold` | `LOW` | Report findings at or above `LOW`, `MEDIUM`, `HIGH` or `CRITICAL`. |
 | `--staged` | off | Scan staged changes. Report only added lines. See [Pre-commit Hook](../../guides/pre-commit/). |
@@ -49,5 +49,4 @@ refuses to overwrite another file unless you add `--force`.
 
 ## Planned commands
 
-SARIF output arrives with Milestone 5. `whac scan --agent-context` arrives
-with Milestone 6. See the [roadmap](../../project/roadmap/).
+`whac scan --agent-context` arrives with Milestone 6. See the [roadmap](../../project/roadmap/).

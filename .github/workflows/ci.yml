@@ -1,0 +1,60 @@
+name: CI
+
+# Lint, test and build whac, verify its rules, and scan this repository with
+# whac itself. The history scan fails the job on any finding; the work-tree
+# scan uploads SARIF to GitHub code scanning.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          # Full history for `whac scan --git`.
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+
+      - name: Install cue
+        run: |
+          go install cuelang.org/go/cmd/cue@v0.17.1
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
+      - name: Lint, vet CUE, test, build, check docs style
+        run: make lint vet-cue test build docs-style
+
+      - name: Verify the builtin rules
+        run: bin/whac rules verify
+
+      - name: Scan the git history of this repository
+        run: bin/whac scan --git .
+
+      - name: Scan the work tree (SARIF)
+        run: bin/whac scan --format sarif . > whac.sarif || test $? -eq 1
+
+      - name: Upload SARIF to code scanning
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: whac.sarif
+          category: whac

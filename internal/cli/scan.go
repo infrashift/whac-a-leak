@@ -46,7 +46,7 @@ Exit codes: 0 no findings at or above the threshold, 1 findings, 2 error.`,
 	cmd.Flags().BoolVar(&f.staged, "staged", false, "scan staged changes; report only added lines")
 	cmd.Flags().StringVar(&f.git, "git", "", "scan git history; optional range as --git=<range> (default HEAD)")
 	cmd.Flags().Lookup("git").NoOptDefVal = "HEAD"
-	cmd.Flags().StringVar(&f.format, "format", "text", "output format: text or json")
+	cmd.Flags().StringVar(&f.format, "format", "text", "output format: text, json or sarif")
 	cmd.Flags().BoolVar(&f.noRedact, "no-redact", false, "print secrets in full")
 	cmd.Flags().StringVar(&f.threshold, "severity-threshold", "LOW", "report findings at or above LOW, MEDIUM, HIGH or CRITICAL")
 	return cmd
@@ -90,7 +90,11 @@ func runScan(cmd *cobra.Command, g *globalFlags, f *scanFlags, root string) erro
 	res.Findings = scan.Filter(res.Findings, minSev)
 
 	out := cmd.OutOrStdout()
-	opts := report.Options{NoRedact: f.noRedact, Color: f.format == "text" && colorEnabled(out)}
+	v, _, _ := buildVersion()
+	opts := report.Options{
+		NoRedact: f.noRedact, Color: f.format == "text" && colorEnabled(out),
+		Rules: rs.Enabled(), ToolVersion: v,
+	}
 	if err := write(out, res, opts); err != nil {
 		return &exitError{code: ExitError, err: err}
 	}
@@ -106,8 +110,10 @@ func writer(format string) (func(io.Writer, *scan.Result, report.Options) error,
 		return report.Text, nil
 	case "json":
 		return report.JSON, nil
+	case "sarif":
+		return report.SARIF, nil
 	}
-	return nil, &exitError{code: ExitError, err: fmt.Errorf("unknown --format %q (want text or json)", format)}
+	return nil, &exitError{code: ExitError, err: fmt.Errorf("unknown --format %q (want text, json or sarif)", format)}
 }
 
 // colorEnabled reports whether w is a terminal and NO_COLOR is unset.

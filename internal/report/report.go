@@ -23,6 +23,9 @@ type Options struct {
 	NoRedact bool
 	// Color adds ANSI colors to text output.
 	Color bool
+	// Rules and ToolVersion describe the tool in SARIF output.
+	Rules       []*rules.Rule
+	ToolVersion string
 }
 
 func secretText(f *scan.Finding, o Options) string {

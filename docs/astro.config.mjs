@@ -44,6 +44,7 @@ export default defineConfig({
 						{ label: 'Allowlists & Fingerprints', slug: 'docs/guides/allowlists' },
 						{ label: 'Pre-commit Hook', slug: 'docs/guides/pre-commit' },
 						{ label: 'Scanning Git History', slug: 'docs/guides/git-history' },
+						{ label: 'CI & SARIF', slug: 'docs/guides/ci-sarif' },
 					],
 				},
 				{
@@ -52,6 +53,8 @@ export default defineConfig({
 						{ label: 'CLI', slug: 'docs/reference/cli' },
 						{ label: 'Rule Schema', slug: 'docs/reference/rule-schema' },
 						{ label: 'Output Formats', slug: 'docs/reference/output-formats' },
+						{ label: 'Default Rules', slug: 'docs/reference/default-rules' },
+						{ label: 'Benchmarks', slug: 'docs/reference/benchmarks' },
 						{ label: 'Make Targets', slug: 'docs/reference/make-targets' },
 					],
 				},

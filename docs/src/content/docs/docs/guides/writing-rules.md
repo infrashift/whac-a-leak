@@ -111,15 +111,15 @@ the value. Its `secretGroup` then holds the secret.
 ```cue
 package whac
 
-rules: VAULT_TOKEN: {
-	description: "Vault token in a config file"
+rules: ACME_CONFIG_TOKEN: {
+	description: "Acme token in a config file"
 	kind:        "assignment"
 	severity:    "HIGH"
-	keywords: ["vault"]
-	keyContext: "(?i)^vault_?token$"
+	keywords: ["acme"]
+	keyContext: "(?i)^acme_?token$"
 	tests: {
-		mustMatch: [{file: "app.yaml", content: "vault_token: EXAMPLE-s.Q9wv7Lm2Rt"}]
-		mustIgnore: [{file: "app.yaml", content: "vault_token: ${VAULT_TOKEN}"}]
+		mustMatch: [{file: "app.yaml", content: "acme_token: EXAMPLE-Q9wv7Lm2Rt"}]
+		mustIgnore: [{file: "app.yaml", content: "acme_token: ${ACME_TOKEN}"}]
 	}
 }
 ```

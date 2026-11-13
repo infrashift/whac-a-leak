@@ -42,7 +42,8 @@ it is not a secret. whac drops a UUID for these rules. A rule without an
 ## Performance
 
 The prefilter keeps the regex work small. On keyword-sparse source code, the
-builtin rules scan about 195 MB/s on one CPU core. whac scans files in
+builtin rules scan about 183 MB/s on one CPU core. See
+[Benchmarks](../../reference/benchmarks/). whac scans files in
 parallel, with one worker per CPU.
 
 ## Exit codes

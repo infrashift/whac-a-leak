@@ -3,7 +3,8 @@ title: Output Formats
 description: The text and JSON report formats of whac scan.
 ---
 
-Set the format with `--format text` (the default) or `--format json`. whac
+Set the format with `--format text` (the default), `--format json` or
+`--format sarif`. whac
 redacts each secret. It keeps the first four and the last four characters of
 a single-line secret with 16 or more characters. It prints `****` for other
 secrets. Add `--no-redact` to print each secret in full.
@@ -67,4 +68,7 @@ An assignment finding also has `keyPath`, for example
 `findings` is an empty array when whac finds nothing. `endLine` differs from
 `line` for a secret that spans lines, such as a PEM key.
 
-SARIF output arrives in Milestone 5.
+## SARIF
+
+`--format sarif` writes SARIF 2.1.0 for code scanning services. SARIF output
+always redacts secrets. See [CI & SARIF](../../guides/ci-sarif/).

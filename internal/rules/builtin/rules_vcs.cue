@@ -15,3 +15,15 @@ rules: GITHUB_TOKEN: {
 		]
 	}
 }
+
+rules: GITLAB_TOKEN: {
+	description: "GitLab personal, project or group access token"
+	severity:    "CRITICAL"
+	keywords: ["glpat-"]
+	regex: #"\b(glpat-[A-Za-z0-9_-]{20,})"#
+	tests: {
+		// Assembled from pieces: no complete token appears in this file.
+		mustMatch: ["GITLAB_TOKEN=" + "gl" + "pat-" + "EXAMPLE0a1B2c3D4e5F6"]
+		mustIgnore: ["GITLAB_TOKEN=" + "gl" + "pat-" + "short"]
+	}
+}

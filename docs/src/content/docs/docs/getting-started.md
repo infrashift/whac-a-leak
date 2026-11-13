@@ -41,7 +41,6 @@ suppress a false positive, read [Allowlists & Fingerprints](../guides/allowlists
 The project CLI spec defines these commands. They do **not exist yet**:
 
 ```sh
-whac scan . --format sarif       # output for GitHub code scanning
 whac scan --agent-context        # preflight: env vars, credential files, sockets
 ```
 

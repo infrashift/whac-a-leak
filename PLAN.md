@@ -50,10 +50,10 @@ Tracking: [ISSUE-004](.okfw/issues/issue-004-staged-and-git-history-scanning--01
 
 ## Milestone 5 — SARIF, default ruleset, CI, docs demo, polish
 Tracking: [ISSUE-005](.okfw/issues/issue-005-sarif-default-ruleset-ci-docs-demo-and-release-polish--01a1d2c507d9.md)
-- [ ] SARIF 2.1.0
-- [ ] About 30 builtin rules
-- [ ] `.github/workflows/ci.yml` with self-scan
-- [ ] Remaining docs; README; benchmarks (the landing-page demo moved to Milestone 2)
+- [x] SARIF 2.1.0
+- [x] About 30 builtin rules
+- [x] `.github/workflows/ci.yml` with self-scan
+- [x] Remaining docs; README; benchmarks (the landing-page demo moved to Milestone 2)
 
 ## Milestone 6 — Agent-context preflight
 Tracking: [ISSUE-006](.okfw/issues/issue-006-agent-context-preflight-environment-credential-files-and-exposure-checks--01a1d2cc2118.md) · Decision: [ADR-0011](.okfw/decisions/adr-0011-agent-context-preflight-scans-the-environment-and-credential-files-never-process-memory--01a1d2cc210e.md) · Needs Milestone 3's extractors
