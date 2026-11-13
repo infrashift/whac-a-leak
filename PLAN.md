@@ -63,3 +63,11 @@ Tracking: [ISSUE-006](.okfw/issues/issue-006-agent-context-preflight-environment
 - [x] Exposure findings: `SSH_AUTH_SOCK`, `docker.sock`; opt-in `--probe-imds` (the one network call)
 - [x] `whac scan --agent-context` preflight gate (exit 1, `--no-redact` has no effect); no process memory scan
 - [x] Fake-`$HOME` / `t.Setenv` / temp-socket tests; *Agent-Context Preflight* docs guide (devcontainer + microVM examples)
+
+## Release v0.1.0
+Tracking: [ISSUE-007](.okfw/issues/issue-007-release-v0-1-0--01a1d321f364.md) · Decision: [ADR-0016](.okfw/decisions/adr-0016-release-cross-compiled-archives-with-checksums-and-provenance-under-apache-2-0--01a1d321f35a.md)
+- [x] Apache 2.0 `LICENSE`
+- [x] `make dist` / `make release`: linux and darwin on amd64 and arm64, `SHA256SUMS`
+- [x] Release workflow: matrix build, native smoke tests, provenance attestation, GitHub release
+- [x] Install docs
+- [ ] Tag `v0.1.0` and verify the published release

@@ -1,0 +1,119 @@
+name: Release
+
+# Builds the release archives for a v* tag, smoke-tests each binary on its
+# own platform, and publishes a GitHub release with SHA256SUMS and a SLSA
+# build provenance attestation.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: build ${{ matrix.goos }}/${{ matrix.goarch }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - { goos: linux, goarch: amd64 }
+          - { goos: linux, goarch: arm64 }
+          - { goos: darwin, goarch: amd64 }
+          - { goos: darwin, goarch: arm64 }
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version: stable
+
+      - name: Build the archive
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          VERSION: ${{ github.ref_name }}
+          COMMIT: ${{ github.sha }}
+        run: make dist GOOS="$GOOS" GOARCH="$GOARCH" VERSION="$VERSION" COMMIT="$COMMIT"
+
+      - name: Upload the archive
+        uses: actions/upload-artifact@v7
+        with:
+          name: whac-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: dist/*.tar.gz
+          if-no-files-found: error
+
+  smoke:
+    name: smoke ${{ matrix.goos }}/${{ matrix.goarch }}
+    needs: build
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - { goos: linux, goarch: amd64, runner: ubuntu-latest, exec: "" }
+          - { goos: linux, goarch: arm64, runner: ubuntu-24.04-arm, exec: "" }
+          - { goos: darwin, goarch: arm64, runner: macos-latest, exec: "" }
+          # Intel macOS binary on Apple silicon through Rosetta 2.
+          - { goos: darwin, goarch: amd64, runner: macos-latest, exec: "arch -x86_64" }
+    steps:
+      - name: Download the archive
+        uses: actions/download-artifact@v8
+        with:
+          name: whac-${{ matrix.goos }}-${{ matrix.goarch }}
+
+      - name: Run the binary
+        env:
+          TAG: ${{ github.ref_name }}
+          EXEC: ${{ matrix.exec }}
+        run: |
+          tar -xzf whac_*.tar.gz
+          bin=$(ls -d whac_*/)whac
+          $EXEC "$bin" version | tee version.txt
+          grep -q "whac ${TAG} " version.txt
+          $EXEC "$bin" rules verify
+          # Assemble a fake token so that no complete token is in this file.
+          printf 'GH_TOKEN=%s%s\n' 'ghp_' 'EXAMPLE0a1B2c3D4e5F6g7H8i9J0kLmNoPqr' > fake.env
+          set +e
+          $EXEC "$bin" scan fake.env
+          code=$?
+          set -e
+          test "$code" -eq 1
+
+  release:
+    needs: smoke
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - name: Download the archives
+        uses: actions/download-artifact@v8
+        with:
+          pattern: whac-*
+          merge-multiple: true
+          path: dist
+
+      - name: Write SHA256SUMS
+        working-directory: dist
+        run: sha256sum whac_*.tar.gz > SHA256SUMS && cat SHA256SUMS
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-path: dist/whac_*.tar.gz
+
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          gh release create "$TAG" dist/* --repo "$REPO" --verify-tag \
+            --title "whac $TAG" --generate-notes

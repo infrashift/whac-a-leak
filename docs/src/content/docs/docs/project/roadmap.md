@@ -16,6 +16,7 @@ as one tested commit, together with the docs pages for its features.
 | **4. Git** | `--staged` pre-commit mode, `--git` history with commit attribution, `.pre-commit-hooks.yaml` | Done |
 | **5. Release** | SARIF, about 30 builtin rules, CI with self-scan, generated landing-page demo, benchmarks | Done |
 | **6. Agent-context preflight** | `whac scan --agent-context`: environment variables, well-known credential files (SSO caches, CLI configs, shell history), credential-socket exposure, opt-in IMDS probe | Done |
+| **Release v0.1.0** | Archives for Linux and macOS (amd64, arm64), `SHA256SUMS`, build provenance, Apache 2.0 license | Done |
 
 ## Outside the v1 scope
 

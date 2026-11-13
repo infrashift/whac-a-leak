@@ -51,3 +51,18 @@ before you open a pull request.
 
 `CLAUDE.md` lists the pinned libraries. Write an ADR before you add a
 dependency that is not on the list.
+
+## License
+
+Whac-a-Leak uses the Apache License 2.0. A contribution is under the same
+license. See the `LICENSE` file in the repository.
+
+## Releases
+
+1. Make sure CI passes on `main`.
+2. Create an annotated tag: `git tag -a v0.2.0 -m "whac v0.2.0"`.
+3. Push the tag: `git push origin v0.2.0`.
+
+* **Expected result:** the Release workflow builds four archives, runs each
+  binary on its platform, and publishes the release with `SHA256SUMS` and a
+  build provenance attestation.

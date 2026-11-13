@@ -14,7 +14,7 @@ already in the repository does not block the commit.
    ```yaml
    repos:
      - repo: https://github.com/infrashift/whac-a-leak
-       rev: main
+       rev: v0.1.0
        hooks:
          - id: whac
    ```
@@ -24,8 +24,8 @@ already in the repository does not block the commit.
 
 * **Expected result:** the hook prints the finding, and git stops the commit.
 
-The hook builds whac with Go. Pin `rev` to a tag when the project has
-releases.
+The hook builds whac with Go 1.25 or newer. Update `rev` with
+`pre-commit autoupdate` when a new release exists.
 
 ## Use a plain git hook
 

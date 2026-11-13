@@ -6,7 +6,7 @@ Whac-a-Leak is a pure-Go secret scanner. CUE defines its rules. Each rule has a 
 
 The scan is plain Go. An Aho-Corasick keyword pass runs first. Only the rules with a keyword hit run their regex and charset-aware entropy checks, on the lines around the keyword. whac reads YAML, JSON, `.env`, properties, INI and HCL files as key paths. Allowlists use `whac1:` fingerprints, which do not change on a rebase.
 
-> **Pre-alpha.** There is no tagged release yet. The [ADRs](.okfw/decisions/) record the design. [PLAN.md](PLAN.md) lists the milestones.
+> **v0.1.0** is the first release. The 0.x version means that options and formats can change before 1.0. The [ADRs](.okfw/decisions/) record the design.
 
 ## Features
 
@@ -16,6 +16,10 @@ The scan is plain Go. An Aho-Corasick keyword pass runs first. Only the rules wi
 - Audit an AI agent's context before it starts: environment variables, credential files and credential sockets (`--agent-context`).
 - Text, JSON and SARIF 2.1.0 output. whac redacts secrets by default.
 - About 180 MB/s on one core. Fully offline.
+
+## Install
+
+Download the archive for your platform from the [v0.1.0 release](https://github.com/infrashift/whac-a-leak/releases/tag/v0.1.0): Linux or macOS, amd64 or arm64. Verify it with `SHA256SUMS` and `gh attestation verify`. Or run `go install github.com/infrashift/whac-a-leak/cmd/whac@v0.1.0`.
 
 ## Quick start
 
@@ -35,3 +39,7 @@ For the pre-commit framework, use the hook `whac` from this repository.
 
 - **Docs site:** https://infrashift.github.io/whac-a-leak/
 - **Contributing:** read [CLAUDE.md](CLAUDE.md) and the project wiki in [`.okfw/`](.okfw/). The wiki uses [OKF](https://github.com/infrashift/okf-wiki). Agents read it through `okfw mcp`.
+
+## License
+
+Apache License 2.0. See [LICENSE](LICENSE).

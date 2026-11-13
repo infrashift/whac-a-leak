@@ -1,4 +1,4 @@
-.PHONY: all test vet-cue lint build bench wiki docs-style docs-demo docs-dev docs-build clean
+.PHONY: all test vet-cue lint build dist release bench wiki docs-style docs-demo docs-dev docs-build clean
 
 # golangci-lint runs through `go run` at a pinned version, so the current Go
 # toolchain builds it. A binary built with an older Go cannot type-check a newer
@@ -35,6 +35,26 @@ lint:
 build:
 	go build -trimpath -ldflags "$(LDFLAGS)" -o bin/whac ./cmd/whac
 
+# Release targets: Linux and macOS on amd64 and arm64 (arm64 = AArch64,
+# including Apple silicon). Pure Go, so every target cross-compiles.
+PLATFORMS   ?= linux/amd64 linux/arm64 darwin/amd64 darwin/arm64
+RELVERSION  := $(VERSION:v%=%)
+
+## dist: build one release archive in dist/ for GOOS/GOARCH (default: the host)
+dist:
+	@goos=$${GOOS:-$$(go env GOOS)}; goarch=$${GOARCH:-$$(go env GOARCH)}; \
+	name=whac_$(RELVERSION)_$${goos}_$${goarch}; \
+	mkdir -p dist/stage/$$name && \
+	GOOS=$$goos GOARCH=$$goarch go build -trimpath -ldflags "$(LDFLAGS)" -o dist/stage/$$name/whac ./cmd/whac && \
+	cp README.md LICENSE dist/stage/$$name/ && \
+	tar -C dist/stage --owner=0 --group=0 --numeric-owner -czf dist/$$name.tar.gz $$name && \
+	echo "dist/$$name.tar.gz"
+
+## release: build every platform archive and dist/SHA256SUMS for VERSION
+release:
+	@for p in $(PLATFORMS); do $(MAKE) --no-print-directory dist GOOS=$${p%/*} GOARCH=$${p#*/} || exit 1; done
+	cd dist && sha256sum whac_$(RELVERSION)_*.tar.gz > SHA256SUMS && cat SHA256SUMS
+
 ## bench: engine throughput and rule-load benchmarks
 bench:
 	go test -run '^$$' -bench . -benchmem ./internal/...
@@ -61,4 +81,4 @@ docs-build:
 	cd docs && bun install --frozen-lockfile && bun --bun run build
 
 clean:
-	rm -rf bin/
+	rm -rf bin/ dist/

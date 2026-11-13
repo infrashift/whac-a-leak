@@ -10,4 +10,5 @@
 * [ISSUE-004: Staged and git-history scanning](issue-004-staged-and-git-history-scanning--01a1d2c507cf.md) - Milestone 4: --staged pre-commit mode and --git history mode with a streaming diff parser, commit attribution and fingerprint deduplication.
 * [ISSUE-005: SARIF, default ruleset, CI, docs demo and release polish](issue-005-sarif-default-ruleset-ci-docs-demo-and-release-polish--01a1d2c507d9.md) - Milestone 5: SARIF output, about 30 builtin rules, CI workflow with self-scan, generated landing-page demo, remaining docs and benchmarks.
 * [ISSUE-006: Agent-context preflight: environment, credential files and exposure checks](issue-006-agent-context-preflight-environment-credential-files-and-exposure-checks--01a1d2cc2118.md) - Milestone 6: env and home sources, credential paths in CUE, exposure findings for credential sockets and opt-in IMDS, and the whac scan --agent-context preflight gate.
+* [ISSUE-007: Release v0.1.0](issue-007-release-v0-1-0--01a1d321f364.md) - Tag and publish v0.1.0: Apache 2.0 license, release archives for linux and darwin on amd64 and arm64, checksums, provenance and install docs.
 

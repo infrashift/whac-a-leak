@@ -25,7 +25,7 @@ therefore fails on a secret.
          - uses: actions/setup-go@v7
            with:
              go-version: "1.25"
-         - run: go install github.com/infrashift/whac-a-leak/cmd/whac@main
+         - run: go install github.com/infrashift/whac-a-leak/cmd/whac@v0.1.0
          - name: Scan the history
            run: whac scan --git .
          - name: Scan the work tree for code scanning
@@ -43,8 +43,8 @@ therefore fails on a secret.
 * **Expected result:** a finding fails the job. Code scanning shows each
   finding under *Security → Code scanning*.
 
-`fetch-depth: 0` gives whac the full history. Pin `@main` to a tag when the
-project has releases.
+`fetch-depth: 0` gives whac the full history. To skip the Go build, download
+the release archive instead, and verify `SHA256SUMS` first.
 
 ## SARIF output
 

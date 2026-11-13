@@ -31,6 +31,7 @@ Run these GNU Make targets after every code change:
 - `make vet-cue`  → `cue vet` on the embedded schema and builtin rules
 - `make lint`     → `golangci-lint run` + `go mod tidy -diff`
 - `make build`    → `CGO_ENABLED=0 go build -o bin/whac ./cmd/whac`
+- `make release`  → `dist/`: archives for linux and darwin on amd64 and arm64, plus `SHA256SUMS`
 - `make bench`    → engine and rule-load benchmarks
 - `make wiki`     → `okfw validate --all && okfw validate --okf`
 - `make docs-style` → `scripts/ste-check.py`: ASD-STE100 check of the documentation
