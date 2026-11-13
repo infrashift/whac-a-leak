@@ -21,7 +21,7 @@ macOS, each on amd64 and arm64 (AArch64, including Apple silicon).
    `whac_0.1.0_darwin_arm64.tar.gz`.
 2. Verify the checksum: `sha256sum --check --ignore-missing SHA256SUMS`.
    On macOS, use `shasum -a 256 --check --ignore-missing SHA256SUMS`.
-3. Verify the build provenance:
+3. Verify the build provenance with GitHub CLI 2.49 or newer:
    `gh attestation verify whac_0.1.0_darwin_arm64.tar.gz --repo infrashift/whac-a-leak`.
 4. Extract the archive, and put `whac` on your `PATH`.
 5. Run `whac version`.

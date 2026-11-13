@@ -70,4 +70,4 @@ Tracking: [ISSUE-007](.okfw/issues/issue-007-release-v0-1-0--01a1d321f364.md) ·
 - [x] `make dist` / `make release`: linux and darwin on amd64 and arm64, `SHA256SUMS`
 - [x] Release workflow: matrix build, native smoke tests, provenance attestation, GitHub release
 - [x] Install docs
-- [ ] Tag `v0.1.0` and verify the published release
+- [x] Tag `v0.1.0` and verify the published release
