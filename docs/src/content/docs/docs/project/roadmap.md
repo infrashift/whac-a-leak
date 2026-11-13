@@ -13,8 +13,8 @@ as one tested commit, together with the docs pages for its features.
 | **1. CUE rules** | Rule schema, builtin rules, `.whac/` layers, `whac rules list` / `verify` | Done |
 | **2. Scan engine** | Aho-Corasick prefilter, regex and charset-aware entropy, `whac1:` fingerprints, allowlists, filesystem source, text/JSON output | Done |
 | **3. Structured files** | YAML/JSON/.env/properties/HCL-lite extractors, `assignment` rules, sensitive paths, placeholder filter, entropy trap | Done |
-| **4. Git** | `--staged` pre-commit mode, `--git` history with commit attribution, `.pre-commit-hooks.yaml` | Next |
-| **5. Release** | SARIF, about 30 builtin rules, CI with self-scan, generated landing-page demo, benchmarks | Planned |
+| **4. Git** | `--staged` pre-commit mode, `--git` history with commit attribution, `.pre-commit-hooks.yaml` | Done |
+| **5. Release** | SARIF, about 30 builtin rules, CI with self-scan, generated landing-page demo, benchmarks | Next |
 | **6. Agent-context preflight** | `whac scan --agent-context`: environment variables, well-known credential files (SSO caches, CLI configs, shell history), credential-socket exposure, opt-in IMDS probe | Planned |
 
 ## Outside the v1 scope

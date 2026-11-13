@@ -39,6 +39,8 @@ type Finding struct {
 	// KeyPath is the key path of an assignment finding, e.g.
 	// "database.credentials.password".
 	KeyPath string
+	// Commit, Author and Date attribute a finding from git history.
+	Commit, Author, Date string
 	// Secret is the matched secret. Reports print Redacted unless the user
 	// asks otherwise.
 	Secret   string
@@ -47,6 +49,8 @@ type Finding struct {
 
 // Stats counts what a scan read and skipped.
 type Stats struct {
+	// Commits counts the commits of a history scan.
+	Commits    int   `json:"commits,omitempty"`
 	Files      int   `json:"files"`
 	Bytes      int64 `json:"bytes"`
 	Binary     int   `json:"skippedBinary"`
@@ -98,11 +102,18 @@ func IsBinary(content []byte) bool {
 	return bytes.IndexByte(content[:min(len(content), binarySniffLen)], 0) >= 0
 }
 
-// Content scans one piece of content. path is the display path; rel is the
-// path that allowlist globs match. It returns the findings and the number of
-// matches the allowlist or an inline marker suppressed.
+// Content scans one file. path is the display path; rel is the path that
+// allowlist globs match and that selects the structural extractor. It
+// returns the findings and the number of matches the allowlist or an inline
+// marker suppressed.
 func (p *Pipeline) Content(path, rel string, content []byte) (findings []Finding, suppressed int) {
-	matches := p.Scanner.Scan(rel, content)
+	return p.content(path, rel, rel, content)
+}
+
+// content scans content as the file name; an empty name scans it as
+// unstructured text.
+func (p *Pipeline) content(path, rel, name string, content []byte) (findings []Finding, suppressed int) {
+	matches := p.Scanner.Scan(name, content)
 	if len(matches) == 0 {
 		return nil, 0
 	}
@@ -209,6 +220,7 @@ func (p *Pipeline) file(f source.File) ([]Finding, Stats) {
 }
 
 func (s *Stats) add(o Stats) {
+	s.Commits += o.Commits
 	s.Files += o.Files
 	s.Bytes += o.Bytes
 	s.Binary += o.Binary

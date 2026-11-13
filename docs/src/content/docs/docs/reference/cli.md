@@ -27,6 +27,11 @@ description: The whac commands, flags and exit codes.
 | `--format` | `text` | `text` or `json`. See [Output Formats](../output-formats/). |
 | `--no-redact` | off | Print each secret in full. |
 | `--severity-threshold` | `LOW` | Report findings at or above `LOW`, `MEDIUM`, `HIGH` or `CRITICAL`. |
+| `--staged` | off | Scan staged changes. Report only added lines. See [Pre-commit Hook](../../guides/pre-commit/). |
+| `--git[=<range>]` | off | Scan the lines that each commit adds. The default range is `HEAD`. See [Scanning Git History](../../guides/git-history/). |
+
+`--staged` and `--git` exclude each other. With either flag, the path is a
+directory inside the git work tree.
 
 `whac rules list` verifies the samples first. A failed sample stops the
 command with exit code `2`.
@@ -44,5 +49,5 @@ refuses to overwrite another file unless you add `--force`.
 
 ## Planned commands
 
-`whac scan --staged` and `whac scan --git` arrive with Milestone 4. See the
-[roadmap](../../project/roadmap/).
+SARIF output arrives with Milestone 5. `whac scan --agent-context` arrives
+with Milestone 6. See the [roadmap](../../project/roadmap/).

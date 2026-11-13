@@ -30,7 +30,10 @@ make build        # → bin/whac
 
 * **Expected result:** whac prints the findings and a summary line.
 
-To add your own rules, read [Writing Rules](../guides/writing-rules/). To
+To check commits before they happen, read
+[Pre-commit Hook](../guides/pre-commit/). To scan old commits, read
+[Scanning Git History](../guides/git-history/). To add your own rules, read
+[Writing Rules](../guides/writing-rules/). To
 suppress a false positive, read [Allowlists & Fingerprints](../guides/allowlists/).
 
 ## Planned commands
@@ -38,8 +41,6 @@ suppress a false positive, read [Allowlists & Fingerprints](../guides/allowlists
 The project CLI spec defines these commands. They do **not exist yet**:
 
 ```sh
-whac scan --staged               # pre-commit: scan only the lines you commit
-whac scan --git main..HEAD       # scan the history of a branch
 whac scan . --format sarif       # output for GitHub code scanning
 whac scan --agent-context        # preflight: env vars, credential files, sockets
 ```

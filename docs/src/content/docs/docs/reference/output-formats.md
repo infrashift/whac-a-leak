@@ -57,6 +57,10 @@ set.
 }
 ```
 
+A finding from `--git` also has `commit`, `author` and `date`. The text
+format prints them on a `commit:` line. The summary then counts commits and
+file changes.
+
 An assignment finding also has `keyPath`, for example
 `"database.credentials.password"`. The text format prints it as `key:`.
 

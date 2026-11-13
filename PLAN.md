@@ -44,9 +44,9 @@ Tracking: [ISSUE-003](.okfw/issues/issue-003-structure-aware-scanning-and-assign
 
 ## Milestone 4 — Staged and git-history scanning
 Tracking: [ISSUE-004](.okfw/issues/issue-004-staged-and-git-history-scanning--01a1d2c507cf.md)
-- [ ] `--staged` (added lines, staged blobs)
-- [ ] `--git [range]` streaming diff parser, attribution, dedup
-- [ ] Temp-repo tests; `.pre-commit-hooks.yaml`; docs pages
+- [x] `--staged` (added lines, staged blobs)
+- [x] `--git [range]` streaming diff parser, attribution, dedup
+- [x] Temp-repo tests; `.pre-commit-hooks.yaml`; docs pages
 
 ## Milestone 5 — SARIF, default ruleset, CI, docs demo, polish
 Tracking: [ISSUE-005](.okfw/issues/issue-005-sarif-default-ruleset-ci-docs-demo-and-release-polish--01a1d2c507d9.md)

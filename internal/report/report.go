@@ -42,6 +42,9 @@ type jsonFinding struct {
 	EndLine     int            `json:"endLine"`
 	Fingerprint string         `json:"fingerprint"`
 	KeyPath     string         `json:"keyPath,omitempty"`
+	Commit      string         `json:"commit,omitempty"`
+	Author      string         `json:"author,omitempty"`
+	Date        string         `json:"date,omitempty"`
 	Secret      string         `json:"secret"`
 	Redacted    bool           `json:"redacted"`
 }
@@ -72,7 +75,8 @@ func JSON(w io.Writer, res *scan.Result, o Options) error {
 		rep.Findings = append(rep.Findings, jsonFinding{
 			RuleID: f.RuleID, Description: f.Description, Severity: f.Severity,
 			Path: f.Path, Line: f.Line, Column: f.Column, EndLine: f.EndLine,
-			Fingerprint: f.Fingerprint, KeyPath: f.KeyPath, Secret: secretText(f, o), Redacted: !o.NoRedact,
+			Fingerprint: f.Fingerprint, KeyPath: f.KeyPath, Commit: f.Commit, Author: f.Author, Date: f.Date,
+			Secret: secretText(f, o), Redacted: !o.NoRedact,
 		})
 	}
 	enc := json.NewEncoder(w)
@@ -103,6 +107,9 @@ func Text(w io.Writer, res *scan.Result, o Options) error {
 		if f.KeyPath != "" {
 			p.printf("          key: %s\n", f.KeyPath)
 		}
+		if f.Commit != "" {
+			p.printf("          commit: %s %s %s\n", shortHash(f.Commit), f.Author, f.Date)
+		}
 		p.printf("          secret: %s\n", secretText(f, o))
 		p.printf("          fingerprint: %s\n\n", f.Fingerprint)
 	}
@@ -127,7 +134,11 @@ func Summary(res *scan.Result) string {
 		}
 		fmt.Fprintf(&b, "%d finding(s): %s.", n, strings.Join(parts, ", "))
 	}
-	fmt.Fprintf(&b, " Scanned %d file(s), %s.", s.Files, humanBytes(s.Bytes))
+	if s.Commits > 0 {
+		fmt.Fprintf(&b, " Scanned %d commit(s), %d file change(s), %s.", s.Commits, s.Files, humanBytes(s.Bytes))
+	} else {
+		fmt.Fprintf(&b, " Scanned %d file(s), %s.", s.Files, humanBytes(s.Bytes))
+	}
 	if skipped := s.Binary + s.Large + s.Excluded + s.Unreadable; skipped > 0 {
 		fmt.Fprintf(&b, " Skipped %d: %d binary, %d large, %d excluded, %d unreadable.",
 			skipped, s.Binary, s.Large, s.Excluded, s.Unreadable)
@@ -136,6 +147,13 @@ func Summary(res *scan.Result) string {
 		fmt.Fprintf(&b, " Suppressed %d.", s.Suppressed)
 	}
 	return b.String()
+}
+
+func shortHash(h string) string {
+	if len(h) > 12 {
+		return h[:12]
+	}
+	return h
 }
 
 func bySeverity(fs []scan.Finding) map[string]int {

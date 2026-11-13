@@ -42,6 +42,8 @@ export default defineConfig({
 						{ label: 'Layering Org Policy', slug: 'docs/guides/layering' },
 						{ label: 'Structured Files', slug: 'docs/guides/structured-files' },
 						{ label: 'Allowlists & Fingerprints', slug: 'docs/guides/allowlists' },
+						{ label: 'Pre-commit Hook', slug: 'docs/guides/pre-commit' },
+						{ label: 'Scanning Git History', slug: 'docs/guides/git-history' },
 					],
 				},
 				{

@@ -61,7 +61,7 @@ A worker pool of `GOMAXPROCS` workers processes the chunks. The engine sorts the
 | `internal/structural` | extractors: YAML, JSON, dotenv, properties, INI, HCL-lite, generic `key = value` ([ADR-0005](/decisions/adr-0005-structured-files-are-parsed-by-lightweight-go-extractors-not-the-cue-runtime--01a1d2c50770.md)) |
 | `internal/scan` | the pipeline: file gates, worker pool, engine, allowlist, fingerprints, findings, redaction |
 | `internal/structural` | YAML/JSON/dotenv/properties/HCL-lite extractors |
-| `internal/source` | filesystem, staged, history, env and home sources; diff parser |
+| `internal/source` | filesystem source; staged and history sources with a streaming `-U0` diff parser ([ADR-0014](/decisions/adr-0014-drive-git-with-pinned-options-and-count-hunk-lines--01a1d2ff1a65.md)); env and home sources (Milestone 6) |
 | `internal/allow` | allowlist evaluation |
 | `internal/fingerprint` | `whac1:` fingerprints |
 | `internal/report` | text, JSON and SARIF writers |

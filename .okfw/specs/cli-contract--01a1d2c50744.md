@@ -62,3 +62,8 @@ Milestone 2: `whac scan [path]` with `--format text|json`, `--no-redact` and `--
 - Unreadable files do not stop a scan. The summary counts them.
 
 Milestone 3: JSON findings of assignment rules carry `keyPath`. The text report prints it as `key:`.
+
+Milestone 4: `whac scan --staged` and `whac scan --git[=<range>]` ([ADR-0014](/decisions/adr-0014-drive-git-with-pinned-options-and-count-hunk-lines--01a1d2ff1a65.md)).
+- `--git` has an optional value, so a range needs `=`: `--git=main..HEAD`. A bare `--git` scans `HEAD`. Without `=`, the next word is the path; whac then hints at `--git=<range>`.
+- `--staged` and `--git` exclude each other. The path is a directory in the work tree. Paths in findings are relative to the repository root.
+- History findings carry `commit`, `author` (name only, no email) and `date`. The summary counts commits and file changes.

@@ -1,0 +1,9 @@
+# pre-commit (https://pre-commit.com) hook definition for Whac-a-Leak.
+- id: whac
+  name: whac secret scan
+  description: Scan staged changes for secrets with Whac-a-Leak.
+  entry: whac scan --staged
+  language: golang
+  pass_filenames: false
+  always_run: true
+  stages: [pre-commit]

@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -16,16 +17,23 @@ type scanFlags struct {
 	format    string
 	noRedact  bool
 	threshold string
+	staged    bool
+	git       string
 }
 
 func newScanCmd(g *globalFlags) *cobra.Command {
 	f := &scanFlags{}
 	cmd := &cobra.Command{
 		Use:   "scan [path]",
-		Short: "Scan a directory or file for secrets",
+		Short: "Scan a directory, a file, staged changes or git history for secrets",
 		Long: `Scan a directory or file for secrets. Inside a git work tree, whac scans the
-files that git tracks or would track, so .gitignore applies. Exit codes: 0 no
-findings at or above the threshold, 1 findings, 2 error.`,
+files that git tracks or would track, so .gitignore applies.
+
+--staged scans the staged changes of the repository at path (a pre-commit
+check) and reports only findings on added lines. --git scans the lines that
+each commit adds; --git=<range> limits the commits, e.g. --git=main..HEAD.
+
+Exit codes: 0 no findings at or above the threshold, 1 findings, 2 error.`,
 		Args: cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			root := "."
@@ -35,6 +43,9 @@ findings at or above the threshold, 1 findings, 2 error.`,
 			return runScan(cmd, g, f, root)
 		},
 	}
+	cmd.Flags().BoolVar(&f.staged, "staged", false, "scan staged changes; report only added lines")
+	cmd.Flags().StringVar(&f.git, "git", "", "scan git history; optional range as --git=<range> (default HEAD)")
+	cmd.Flags().Lookup("git").NoOptDefVal = "HEAD"
 	cmd.Flags().StringVar(&f.format, "format", "text", "output format: text or json")
 	cmd.Flags().BoolVar(&f.noRedact, "no-redact", false, "print secrets in full")
 	cmd.Flags().StringVar(&f.threshold, "severity-threshold", "LOW", "report findings at or above LOW, MEDIUM, HIGH or CRITICAL")
@@ -58,7 +69,21 @@ func runScan(cmd *cobra.Command, g *globalFlags, f *scanFlags, root string) erro
 	if err != nil {
 		return &exitError{code: ExitError, err: err}
 	}
-	res, err := p.Files(cmd.Context(), root)
+	if f.staged && f.git != "" {
+		return &exitError{code: ExitError, err: errors.New("--staged and --git exclude each other")}
+	}
+	var res *scan.Result
+	switch {
+	case f.staged:
+		res, err = p.Staged(cmd.Context(), root)
+	case f.git != "":
+		if _, statErr := os.Stat(root); statErr != nil {
+			return &exitError{code: ExitError, err: fmt.Errorf("%w; to pass a revision range, use --git=<range>", statErr)}
+		}
+		res, err = p.History(cmd.Context(), root, f.git)
+	default:
+		res, err = p.Files(cmd.Context(), root)
+	}
 	if err != nil {
 		return &exitError{code: ExitError, err: err}
 	}
