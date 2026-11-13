@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -16,6 +18,7 @@ import (
 
 type scanFlags struct {
 	format    string
+	outputs   []string
 	noRedact  bool
 	threshold string
 	staged    bool
@@ -44,6 +47,10 @@ variables (--env), well-known credential files under $HOME and each --root
 (--home), and credential sockets. --probe-imds adds one GET to the cloud
 metadata endpoint. Values are always masked in this mode.
 
+--format sets the format of the report on stdout. --output FORMAT=PATH also
+writes the report to a file, e.g. --output json=whac.json. Repeat --output
+for more files. whac creates each file with mode 0600 and never colors it.
+
 Exit codes: 0 no findings at or above the threshold, 1 findings, 2 error.`,
 		Args: cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -66,6 +73,7 @@ Exit codes: 0 no findings at or above the threshold, 1 findings, 2 error.`,
 	cmd.Flags().StringSliceVar(&f.roots, "root", nil, "extra root for credential files, e.g. a mounted volume (repeatable)")
 	cmd.Flags().BoolVar(&f.probeIMDS, "probe-imds", false, "with --agent-context: send one GET to the cloud metadata endpoint")
 	cmd.Flags().StringVar(&f.format, "format", "text", "output format: text, json or sarif")
+	cmd.Flags().StringArrayVar(&f.outputs, "output", nil, "also write the report to a file as FORMAT=PATH, e.g. json=whac.json (repeatable)")
 	cmd.Flags().BoolVar(&f.noRedact, "no-redact", false, "print secrets in full")
 	cmd.Flags().StringVar(&f.threshold, "severity-threshold", "LOW", "report findings at or above LOW, MEDIUM, HIGH or CRITICAL")
 	return cmd
@@ -77,6 +85,10 @@ func runScan(cmd *cobra.Command, g *globalFlags, f *scanFlags, root string) erro
 		return &exitError{code: ExitError, err: fmt.Errorf("--severity-threshold: %w", err)}
 	}
 	write, err := writer(f.format)
+	if err != nil {
+		return err
+	}
+	outputs, err := parseOutputs(f.outputs)
 	if err != nil {
 		return err
 	}
@@ -124,10 +136,13 @@ func runScan(cmd *cobra.Command, g *globalFlags, f *scanFlags, root string) erro
 
 	out := cmd.OutOrStdout()
 	v, _, _ := buildVersion()
-	opts := report.Options{
-		NoRedact: f.noRedact, Color: f.format == "text" && colorEnabled(out),
-		Rules: rs.Enabled(), ToolVersion: v,
+	opts := report.Options{NoRedact: f.noRedact, Rules: rs.Enabled(), ToolVersion: v}
+	for _, o := range outputs {
+		if err := writeFile(o.path, o.write, res, opts); err != nil {
+			return &exitError{code: ExitError, err: fmt.Errorf("--output %s: %w", o.path, err)}
+		}
 	}
+	opts.Color = f.format == "text" && colorEnabled(out)
 	if err := write(out, res, opts); err != nil {
 		return &exitError{code: ExitError, err: err}
 	}
@@ -162,7 +177,7 @@ func runAgent(cmd *cobra.Command, p *scan.Pipeline, f *scanFlags) (*scan.Result,
 	})
 }
 
-func writer(format string) (func(io.Writer, *scan.Result, report.Options) error, error) {
+func writer(format string) (reportWriter, error) {
 	switch format {
 	case "text":
 		return report.Text, nil
@@ -172,6 +187,61 @@ func writer(format string) (func(io.Writer, *scan.Result, report.Options) error,
 		return report.SARIF, nil
 	}
 	return nil, &exitError{code: ExitError, err: fmt.Errorf("unknown --format %q (want text, json or sarif)", format)}
+}
+
+type reportWriter = func(io.Writer, *scan.Result, report.Options) error
+
+// outputSpec is one --output FORMAT=PATH.
+type outputSpec struct {
+	path  string
+	write reportWriter
+}
+
+// parseOutputs checks each --output spec before the scan starts.
+func parseOutputs(specs []string) ([]outputSpec, error) {
+	out := make([]outputSpec, 0, len(specs))
+	seen := map[string]bool{}
+	for _, s := range specs {
+		format, path, ok := strings.Cut(s, "=")
+		if !ok || path == "" {
+			return nil, &exitError{code: ExitError, err: fmt.Errorf("--output %q: want FORMAT=PATH, e.g. json=whac.json", s)}
+		}
+		w, err := writer(format)
+		if err != nil {
+			return nil, &exitError{code: ExitError, err: fmt.Errorf("--output %q: unknown format %q (want text, json or sarif)", s, format)}
+		}
+		key := filepath.Clean(path)
+		if seen[key] {
+			return nil, &exitError{code: ExitError, err: fmt.Errorf("--output: %s appears more than once", path)}
+		}
+		seen[key] = true
+		out = append(out, outputSpec{path: path, write: w})
+	}
+	return out, nil
+}
+
+// writeFile writes a report to path with mode 0600. It writes a temporary
+// file in the same directory and renames it, so an error leaves no partial
+// report.
+func writeFile(path string, write reportWriter, res *scan.Result, opts report.Options) error {
+	tmp, err := os.CreateTemp(filepath.Dir(path), ".whac-report-*")
+	if err != nil {
+		return err
+	}
+	err = tmp.Chmod(0o600)
+	if err == nil {
+		err = write(tmp, res, opts)
+	}
+	if cerr := tmp.Close(); err == nil {
+		err = cerr
+	}
+	if err == nil {
+		err = os.Rename(tmp.Name(), path)
+	}
+	if err != nil {
+		_ = os.Remove(tmp.Name())
+	}
+	return err
 }
 
 // colorEnabled reports whether w is a terminal and NO_COLOR is unset.

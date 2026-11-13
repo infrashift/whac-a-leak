@@ -29,7 +29,7 @@ description: "The whac command surface: subcommands, flags, finding categories, 
 | `whac version` | Show the version, commit and build date. |
 
 ## Common flags
-`--format text|json|sarif` (default `text`) · `--config-dir .whac` · `--no-redact` (whac redacts secrets by default, for example `ghp_****abcd`) · `--severity-threshold LOW|MEDIUM|HIGH|CRITICAL`
+`--format text|json|sarif` (default `text`; stdout) · `--output FORMAT=PATH` (repeatable; a report file) · `--config-dir .whac` · `--no-redact` (whac redacts secrets by default, for example `ghp_****abcd`) · `--severity-threshold LOW|MEDIUM|HIGH|CRITICAL`
 
 ## Exit codes
 | Code | Meaning |
@@ -78,3 +78,9 @@ Milestone 6: `--agent-context`, `--env`, `--home`, `--root` (repeatable) and `--
 - The agent-context flags take no path and exclude `--staged` and `--git`. `--probe-imds` needs `--agent-context`. `--root` needs `--agent-context` or `--home`.
 - Findings have a `category` (`secret` or `exposure`). Agent-context findings print `[masked]`; `--no-redact` has no effect.
 - Environment findings have the path `env`, the key path `env.<NAME>` and no line. Exposure findings have the socket path or URL as their path. SARIF omits the region when there is no line.
+
+Milestone 7: `--output FORMAT=PATH`, repeatable ([ADR-0017](/decisions/adr-0017-report-files-through-a-repeatable-output-flag-json-stays-one-document--01a1d36982f5.md)).
+- `--format` sets stdout. Each `--output` writes one more report from the same scan.
+- whac checks each value before the scan. A missing `=`, an empty path, an unknown format or a duplicate path gives exit code 2.
+- Files have mode 0600 and no colors. whac writes a temporary file and renames it. `--no-redact` applies to files too; SARIF always redacts.
+- The JSON report stays one document. whac writes no JSON Lines.

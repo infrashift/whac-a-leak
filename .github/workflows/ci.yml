@@ -52,7 +52,7 @@ jobs:
         run: bin/whac scan --git .
 
       - name: Scan the work tree (SARIF)
-        run: bin/whac scan --format sarif . > whac.sarif || test $? -eq 1
+        run: bin/whac scan --output sarif=whac.sarif . || test $? -eq 1
 
       - name: Upload SARIF to code scanning
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository

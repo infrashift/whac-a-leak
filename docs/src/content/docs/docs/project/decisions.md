@@ -149,3 +149,12 @@ builds each sample for such a format from pieces, for example
 its own repository in CI. The allowlist covers fixture directories by path,
 and fake values in test files by fingerprint.
 
+
+## ADR-0017: Report files with `--output`
+
+`--format` sets the report on stdout. `--output FORMAT=PATH` writes one more
+report to a file from the same scan. Repeat it for more files. The JSON
+report stays one document. whac collects and sorts all findings before
+output, so JSON Lines gives no streaming. The envelope (`apiVersion`,
+`kind`, `summary`) is the versioned contract. Use `jq -c '.findings[]'` to
+get one finding per line.

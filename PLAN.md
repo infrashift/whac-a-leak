@@ -71,3 +71,11 @@ Tracking: [ISSUE-007](.okfw/issues/issue-007-release-v0-1-0--01a1d321f364.md) ·
 - [x] Release workflow: matrix build, native smoke tests, provenance attestation, GitHub release
 - [x] Install docs
 - [x] Tag `v0.1.0` and verify the published release
+
+## Milestone 7 — Report files (`--output`)
+Tracking: [ISSUE-008](.okfw/issues/issue-008-report-files-with-output--01a1d3699d8b.md) · Decision: [ADR-0017](.okfw/decisions/adr-0017-report-files-through-a-repeatable-output-flag-json-stays-one-document--01a1d36982f5.md)
+- [x] `whac scan --output FORMAT=PATH` (repeatable); `--format` still sets stdout
+- [x] Validation before the scan; mode 0600, no colors, temporary file + rename
+- [x] Tests: text + JSON + SARIF in one run, errors, `--no-redact`, agent-context mode
+- [x] Docs: CLI reference, Output Formats, CI & SARIF; CI self-scan uses `--output`
+- [ ] Release v0.2.0

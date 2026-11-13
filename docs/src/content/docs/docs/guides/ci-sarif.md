@@ -30,7 +30,7 @@ therefore fails on a secret.
            run: whac scan --git .
          - name: Scan the work tree for code scanning
            if: always()
-           run: whac scan --format sarif . > whac.sarif || test $? -eq 1
+           run: whac scan --output sarif=whac.sarif . || test $? -eq 1
          - uses: github/codeql-action/upload-sarif@v4
            if: always()
            with:
@@ -48,7 +48,9 @@ the release archive instead, and verify `SHA256SUMS` first.
 
 ## SARIF output
 
-`whac scan --format sarif` writes SARIF 2.1.0.
+`whac scan --format sarif` writes SARIF 2.1.0 to stdout.
+`whac scan --output sarif=whac.sarif` writes it to a file and prints the text
+report in the job log.
 
 * Each rule appears in `tool.driver.rules` with a `security-severity` value
   for GitHub: `CRITICAL` 9.5, `HIGH` 8.0, `MEDIUM` 5.5, `LOW` 3.0.
