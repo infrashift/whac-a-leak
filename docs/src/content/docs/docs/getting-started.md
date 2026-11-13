@@ -3,7 +3,7 @@ title: Getting Started
 description: Install Whac-a-Leak and run a first scan.
 ---
 
-The current release is **v0.1.0**. Release archives exist for Linux and
+The current release is **v0.2.0**. Release archives exist for Linux and
 macOS, each on amd64 and arm64 (AArch64, including Apple silicon).
 
 ## Prerequisites
@@ -16,22 +16,22 @@ macOS, each on amd64 and arm64 (AArch64, including Apple silicon).
 ## Install a release
 
 1. Download the archive for your platform and `SHA256SUMS` from the
-   [v0.1.0 release](https://github.com/infrashift/whac-a-leak/releases/tag/v0.1.0).
-   The archive name is `whac_0.1.0_<os>_<arch>.tar.gz`, for example
-   `whac_0.1.0_darwin_arm64.tar.gz`.
+   [v0.2.0 release](https://github.com/infrashift/whac-a-leak/releases/tag/v0.2.0).
+   The archive name is `whac_0.2.0_<os>_<arch>.tar.gz`, for example
+   `whac_0.2.0_darwin_arm64.tar.gz`.
 2. Verify the checksum: `sha256sum --check --ignore-missing SHA256SUMS`.
    On macOS, use `shasum -a 256 --check --ignore-missing SHA256SUMS`.
 3. Verify the build provenance with GitHub CLI 2.49 or newer:
-   `gh attestation verify whac_0.1.0_darwin_arm64.tar.gz --repo infrashift/whac-a-leak`.
+   `gh attestation verify whac_0.2.0_darwin_arm64.tar.gz --repo infrashift/whac-a-leak`.
 4. Extract the archive, and put `whac` on your `PATH`.
 5. Run `whac version`.
 
-* **Expected result:** whac prints `whac v0.1.0` with the commit and the
+* **Expected result:** whac prints `whac v0.2.0` with the commit and the
   build date.
 
 ## Install with Go
 
-Run `go install github.com/infrashift/whac-a-leak/cmd/whac@v0.1.0`. This
+Run `go install github.com/infrashift/whac-a-leak/cmd/whac@v0.2.0`. This
 needs Go 1.25 or newer.
 
 ## Build from source
