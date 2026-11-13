@@ -57,7 +57,8 @@ A worker pool of `GOMAXPROCS` workers processes the chunks. The engine sorts the
 | `cmd/whac` | thin `main` → `internal/cli` |
 | `internal/cli` | Cobra commands, flag parsing, exit codes ([ADR-0002](/decisions/adr-0002-pure-go-with-cgo-enabled0-and-a-cobra-cli--01a1d2c50754.md)) |
 | `internal/rules` | embedded CUE (`builtin/`), loader ([ADR-0012](/decisions/adr-0012-load-layers-as-one-in-memory-cue-build-instance--01a1d2e388a9.md)), decode, compile, overrides |
-| `internal/engine` | prefilter, matcher, entropy, charset, filters, rule verification |
+| `internal/engine` | prefilter, line windows ([ADR-0013](/decisions/adr-0013-regexes-run-on-keyword-line-windows--01a1d2f04316.md)), matcher, entropy, charset, safe formats, rule verification |
+| `internal/scan` | the pipeline: file gates, worker pool, engine, allowlist, fingerprints, findings, redaction |
 | `internal/structural` | YAML/JSON/dotenv/properties/HCL-lite extractors |
 | `internal/source` | filesystem, staged, history, env and home sources; diff parser |
 | `internal/allow` | allowlist evaluation |

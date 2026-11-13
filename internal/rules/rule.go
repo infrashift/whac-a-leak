@@ -119,8 +119,10 @@ type Rule struct {
 	Keywords    []string
 	Regex       *regexp.Regexp
 	SecretGroup int
-	KeyContext  *regexp.Regexp
-	Paths       []string
+	// Multiline widens the regex window beyond the keyword's line.
+	Multiline  bool
+	KeyContext *regexp.Regexp
+	Paths      []string
 
 	Entropy      *Entropy
 	Stopwords    []string // lowercased

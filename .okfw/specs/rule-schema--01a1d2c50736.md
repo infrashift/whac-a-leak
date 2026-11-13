@@ -35,6 +35,7 @@ The source is `internal/rules/builtin/schema.cue`. The docs site shows the file 
 | `enabled` | `true` |
 | `keywords`, `regex` | required for pattern rules |
 | `secretGroup` | `1` |
+| `multiline` | `false`: the regex runs on the keyword's line only ([ADR-0013](/decisions/adr-0013-regexes-run-on-keyword-line-windows--01a1d2f04316.md)) |
 | `keyContext`, `paths` | assignment rules (Milestone 3) |
 | `entropy` | optional: `min`, `max`, `minLen` (default 16), `charset` |
 | `stopwords`, `allowRegexes` | empty |

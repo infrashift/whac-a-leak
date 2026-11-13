@@ -4,6 +4,8 @@ go 1.25.0
 
 require (
 	cuelang.org/go v0.17.1
+	github.com/bmatcuk/doublestar/v4 v4.10.4
+	github.com/petar-dambovaliev/aho-corasick v0.0.0-20250424160509-463d218d4745
 	github.com/spf13/cobra v1.10.2
 )
 

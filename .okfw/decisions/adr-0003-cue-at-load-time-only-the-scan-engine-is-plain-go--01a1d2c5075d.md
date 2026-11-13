@@ -14,7 +14,7 @@ description: "CUE unifies, validates and decodes rules at startup. The scan neve
 
 # ADR-0003: CUE at load time only; the scan engine is plain Go
 
-**Status:** Accepted
+**Status:** Accepted · Refined by [ADR-0013](/decisions/adr-0013-regexes-run-on-keyword-line-windows--01a1d2f04316.md) (line windows)
 **Date:** 2026-11-12
 **Source:** Planning session
 

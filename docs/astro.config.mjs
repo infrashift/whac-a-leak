@@ -37,8 +37,10 @@ export default defineConfig({
 				{
 					label: 'Guides',
 					items: [
+						{ label: 'How Scanning Works', slug: 'docs/guides/how-scanning-works' },
 						{ label: 'Writing Rules', slug: 'docs/guides/writing-rules' },
 						{ label: 'Layering Org Policy', slug: 'docs/guides/layering' },
+						{ label: 'Allowlists & Fingerprints', slug: 'docs/guides/allowlists' },
 					],
 				},
 				{
@@ -46,6 +48,7 @@ export default defineConfig({
 					items: [
 						{ label: 'CLI', slug: 'docs/reference/cli' },
 						{ label: 'Rule Schema', slug: 'docs/reference/rule-schema' },
+						{ label: 'Output Formats', slug: 'docs/reference/output-formats' },
 						{ label: 'Make Targets', slug: 'docs/reference/make-targets' },
 					],
 				},

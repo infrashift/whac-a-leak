@@ -25,6 +25,7 @@ type ruleSpec struct {
 	Keywords     []string     `json:"keywords"`
 	Regex        string       `json:"regex"`
 	SecretGroup  int          `json:"secretGroup"`
+	Multiline    bool         `json:"multiline"`
 	KeyContext   string       `json:"keyContext"`
 	Paths        []string     `json:"paths"`
 	Entropy      *entropySpec `json:"entropy"`
@@ -141,6 +142,7 @@ func compileRule(s *ruleSpec) (*Rule, error) {
 		Severity:    sev,
 		Enabled:     s.Enabled,
 		SecretGroup: s.SecretGroup,
+		Multiline:   s.Multiline,
 		Paths:       s.Paths,
 		Tests:       Tests{MustMatch: s.Tests.MustMatch, MustIgnore: s.Tests.MustIgnore},
 	}

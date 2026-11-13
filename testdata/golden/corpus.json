@@ -1,0 +1,104 @@
+{
+  "apiVersion": "whac.infrashift.io/v1alpha1",
+  "kind": "ScanReport",
+  "summary": {
+    "findings": 7,
+    "bySeverity": {
+      "CRITICAL": 4,
+      "MEDIUM": 3
+    },
+    "files": 6,
+    "bytes": 1647,
+    "skippedBinary": 1,
+    "skippedLarge": 0,
+    "skippedExcluded": 0,
+    "skippedUnreadable": 0,
+    "suppressed": 1
+  },
+  "findings": [
+    {
+      "ruleId": "GITHUB_TOKEN",
+      "description": "GitHub personal access, OAuth, app or refresh token",
+      "severity": "CRITICAL",
+      "path": "testdata/corpus/app.env",
+      "line": 2,
+      "column": 10,
+      "endLine": 2,
+      "fingerprint": "whac1:ceaecd45ce7e62d41df233cda112cf1e4aed182b36f61607fec15d2826878fec",
+      "secret": "ghp_****oPqr",
+      "redacted": true
+    },
+    {
+      "ruleId": "GENERIC_API_KEY",
+      "description": "High-entropy value assigned to an API key, token or secret name",
+      "severity": "MEDIUM",
+      "path": "testdata/corpus/app.env",
+      "line": 4,
+      "column": 13,
+      "endLine": 4,
+      "fingerprint": "whac1:b6bddc44ea18a3babc33492193841aadbc3ac1e85456c898468e730f75fada5e",
+      "secret": "Zx9E****d5Nf",
+      "redacted": true
+    },
+    {
+      "ruleId": "AWS_ACCESS_KEY_ID",
+      "description": "AWS access key ID",
+      "severity": "CRITICAL",
+      "path": "testdata/corpus/config.yaml",
+      "line": 3,
+      "column": 18,
+      "endLine": 3,
+      "fingerprint": "whac1:1cf58a8f439f3c27e9fd16a42fe048962c2e92f933ab89b6944dc3650a870339",
+      "secret": "AKIA****MPLE",
+      "redacted": true
+    },
+    {
+      "ruleId": "GENERIC_API_KEY",
+      "description": "High-entropy value assigned to an API key, token or secret name",
+      "severity": "MEDIUM",
+      "path": "testdata/corpus/config.yaml",
+      "line": 7,
+      "column": 19,
+      "endLine": 7,
+      "fingerprint": "whac1:b6bddc44ea18a3babc33492193841aadbc3ac1e85456c898468e730f75fada5e",
+      "secret": "Zx9E****d5Nf",
+      "redacted": true
+    },
+    {
+      "ruleId": "GITHUB_TOKEN",
+      "description": "GitHub personal access, OAuth, app or refresh token",
+      "severity": "CRITICAL",
+      "path": "testdata/corpus/config.yaml",
+      "line": 10,
+      "column": 9,
+      "endLine": 10,
+      "fingerprint": "whac1:ceaecd45ce7e62d41df233cda112cf1e4aed182b36f61607fec15d2826878fec",
+      "secret": "ghp_****oPqr",
+      "redacted": true
+    },
+    {
+      "ruleId": "PRIVATE_KEY",
+      "description": "PEM-encoded private key",
+      "severity": "CRITICAL",
+      "path": "testdata/corpus/keys/id_rsa.example",
+      "line": 2,
+      "column": 1,
+      "endLine": 4,
+      "fingerprint": "whac1:df09694a7bd9473f6735ebf12e85c3ee72b7beb317e7f87153a556ff1a1fa833",
+      "secret": "****",
+      "redacted": true
+    },
+    {
+      "ruleId": "JWT",
+      "description": "JSON Web Token",
+      "severity": "MEDIUM",
+      "path": "testdata/corpus/notes.md",
+      "line": 5,
+      "column": 27,
+      "endLine": 5,
+      "fingerprint": "whac1:edcd6749e85cb4b68bb6ebdac4a3bf761fe154c8ee9da7a5b85c60b2c6ee3c50",
+      "secret": "eyJh****6789",
+      "redacted": true
+    }
+  ]
+}

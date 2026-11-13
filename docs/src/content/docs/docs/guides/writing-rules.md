@@ -37,12 +37,19 @@ loads the builtin rules and every layer in the config dir (`.whac/`).
 The engine evaluates the stages in this order. A candidate secret that fails
 one stage produces no finding.
 
-1. **Keywords.** One keyword must occur in the content. The match ignores case.
-2. **Regex.** The regex uses RE2 syntax (Go `regexp`).
-3. **Secret group.** The capture group `secretGroup` holds the secret. The default is `1`. Use `0` for the whole match.
-4. **Entropy.** The secret must meet the `entropy` constraints, if the rule has them.
-5. **Stopwords.** The engine drops a secret that contains a stopword. The match ignores case.
-6. **Allow regexes.** The engine drops a secret that matches an `allowRegexes` entry.
+1. **Keywords.** One keyword must occur in the content. The match ignores ASCII case.
+2. **Window.** The regex runs on each line that holds a keyword. Set
+   `multiline: true` for a secret that spans lines. The window then runs up to
+   64 KiB from the start of the keyword's line.
+3. **Regex.** The regex uses RE2 syntax (Go `regexp`).
+4. **Secret group.** The capture group `secretGroup` holds the secret. The default is `1`. Use `0` for the whole match.
+5. **Safe formats.** For a rule with an `entropy` block, the engine drops a UUID.
+6. **Entropy.** The secret must meet the `entropy` constraints, if the rule has them.
+7. **Stopwords.** The engine drops a secret that contains a stopword. The match ignores case.
+8. **Allow regexes.** The engine drops a secret that matches an `allowRegexes` entry.
+
+A keyword must occur on the first line of a multi-line secret. A `^` or `$`
+anchor matches the start or end of the window, not of the file.
 
 ## Entropy
 
@@ -69,6 +76,8 @@ Every rule has samples. `tests.mustMatch` must contain at least one sample.
 * Each `mustIgnore` sample must produce no finding.
 
 whac runs every sample through the engine each time it loads the rules. A
+multi-line sample in a rule without `multiline: true` fails, and the error
+tells you to set the field. A
 failed sample stops the load, and whac exits with code `2`. The error names
 the sample by position, for example `mustMatch[0]`. It does not print the
 sample text.

@@ -37,3 +37,7 @@ The initial values above are not reachable for short secrets. A 20-character str
 - `entropy.charset` fixes `k`. Without it, the engine classifies each secret as the smallest charset that contains it.
 - Real tokens in the builtin samples score 0.85–0.97 of the maximum. Placeholders such as `xxxx…` score below 0.2.
 - Milestone 1 implements Shannon entropy and charset classification in `internal/engine/entropy.go`. The `testdata/` corpus tunes the 0.75 fraction in Milestone 2.
+
+## Implementation note (Milestone 2)
+- Safe-format exclusions belong to the entropy heuristic. The engine applies them only to a rule with an `entropy` block. A rule without one matches a precise token format and keeps every match.
+- Milestone 2 implements one safe format: the UUID. Formats that need key context, such as hashes under checksum keys, arrive with the assignment rules in Milestone 3.

@@ -17,6 +17,16 @@ description: The whac commands, flags and exit codes.
 | `whac rules list [--format text\|json]` | Print each rule after all layers apply. |
 | `whac rules verify` | Run the samples of each rule through the engine. Print `PASS` or `FAIL` per rule. |
 | `whac rules export-schema [--force]` | Write the schema to `<config-dir>/schema.cue` for editors and `cue vet`. |
+| `whac scan [path]` | Scan a directory or a file. The default path is `.`. |
+| `whac allow add <fingerprint> --reason "…"` | Add an allowlist entry to `<config-dir>/allowlist.cue`. |
+
+## `whac scan` flags
+
+| Flag | Default | Description |
+|---|---|---|
+| `--format` | `text` | `text` or `json`. See [Output Formats](../output-formats/). |
+| `--no-redact` | off | Print each secret in full. |
+| `--severity-threshold` | `LOW` | Report findings at or above `LOW`, `MEDIUM`, `HIGH` or `CRITICAL`. |
 
 `whac rules list` verifies the samples first. A failed sample stops the
 command with exit code `2`.
@@ -34,5 +44,5 @@ refuses to overwrite another file unless you add `--force`.
 
 ## Planned commands
 
-The scan commands arrive with Milestone 2 and later. See the
+`whac scan --staged` and `whac scan --git` arrive with Milestone 4. See the
 [roadmap](../../project/roadmap/).

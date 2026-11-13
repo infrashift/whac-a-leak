@@ -21,6 +21,6 @@ description: "Milestone 5: SARIF output, about 30 builtin rules, CI workflow wit
 - [ ] SARIF 2.1.0 output with `partialFingerprints`. A test validates it against the schema.
 - [ ] About 30 builtin rules: AWS, GCP service-account JSON, Azure, GitHub, GitLab, Slack, Stripe, Twilio, SendGrid, npm, PyPI, Docker auth, PEM private keys, JWT, generic.
 - [ ] `.github/workflows/ci.yml` runs `make lint vet-cue test build` and `whac scan --git` on its own repo.
-- [ ] `docs/src/demo/gen.go` generates the landing-page demo with whac itself. The demo replaces the placeholder panel.
+- [x] `docs/src/demo/gen.go` generates the landing-page demo with whac itself. The demo replaces the placeholder panel. Done early in Milestone 2 as `make docs-demo` (no Go generator needed).
 - [ ] The remaining docs pages (*CI & SARIF*, *Default Rules*) and the README.
 - [ ] The docs publish the benchmark results.

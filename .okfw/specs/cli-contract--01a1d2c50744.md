@@ -54,3 +54,9 @@ description: "The whac command surface: subcommands, flags, finding categories, 
 
 ## Implemented
 Milestone 1: `whac version`, `whac rules list [--format text|json]`, `whac rules verify`, `whac rules export-schema [--force]`.
+
+Milestone 2: `whac scan [path]` with `--format text|json`, `--no-redact` and `--severity-threshold`; `whac allow add <fingerprint> --reason`.
+- JSON envelope: `apiVersion: whac.infrashift.io/v1alpha1`, `kind: ScanReport`, `summary` (counts and skip statistics), `findings` (never null).
+- Redaction: the first and last four characters of a single-line secret with 16 or more characters; `****` for other secrets.
+- Columns count characters (runes) and start at 1.
+- Unreadable files do not stop a scan. The summary counts them.

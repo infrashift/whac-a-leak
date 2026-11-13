@@ -4,6 +4,7 @@ rules: PRIVATE_KEY: {
 	description: "PEM-encoded private key"
 	severity:    "CRITICAL"
 	keywords: ["private key-----"]
+	multiline: true
 	regex: #"-----BEGIN[ A-Z0-9]*PRIVATE KEY-----\s*((?:[A-Za-z0-9+/=]{20,}\s*){3,})-----END[ A-Z0-9]*PRIVATE KEY-----"#
 	tests: {
 		mustMatch: ["""

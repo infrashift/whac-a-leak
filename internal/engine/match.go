@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"bytes"
 	"fmt"
 	"slices"
 	"strings"
@@ -43,31 +42,18 @@ func (t *trace) explain() string {
 	return "every regex match was rejected: " + strings.Join(t.rejections, "; ")
 }
 
-// keywordHit reports whether any of the rule's keywords occurs in lower, the
-// lowercased content. It is the per-rule form of the prefilter.
-func keywordHit(r *rules.Rule, lower []byte) bool {
-	for _, k := range r.Keywords {
-		if bytes.Contains(lower, []byte(k)) {
-			return true
-		}
-	}
-	return false
-}
-
-// MatchRule evaluates one pattern rule over content: keyword gate, regex,
-// secret group, entropy, stopwords and allowRegexes.
+// MatchRule evaluates one pattern rule over content the way a scan does:
+// keyword hits, line windows, regex, secret group, entropy, safe formats,
+// stopwords and allowRegexes.
 func MatchRule(r *rules.Rule, content []byte) []Match {
-	return matchRule(r, content, bytes.ToLower(content), nil)
+	return evalRule(r, content, keywordHits(r, content), nil)
 }
 
-// matchRule runs every stage after the prefilter. lower is the lowercased
-// content, computed once per chunk by the caller.
-func matchRule(r *rules.Rule, content, lower []byte, t *trace) []Match {
-	if r.Kind != rules.KindPattern || !keywordHit(r, lower) {
+// matchRule runs the regex and filters over one window. Callers pass the
+// windows around keyword hits (see evalRule).
+func matchRule(r *rules.Rule, content []byte, t *trace) []Match {
+	if r.Kind != rules.KindPattern {
 		return nil
-	}
-	if t != nil {
-		t.keywordHit = true
 	}
 	var out []Match
 	for _, loc := range r.Regex.FindAllSubmatchIndex(content, -1) {
@@ -92,6 +78,12 @@ func matchRule(r *rules.Rule, content, lower []byte, t *trace) []Match {
 // rejectSecret returns why a candidate secret is dropped, or "".
 func rejectSecret(r *rules.Rule, secret string) string {
 	if r.Entropy != nil {
+		// Safe formats have high entropy but are not secrets. The exclusion
+		// belongs to the entropy heuristic: a rule without an entropy block
+		// matches a precise token format and keeps every match (ADR-0006).
+		if reason := safeFormat(secret); reason != "" {
+			return reason
+		}
 		if reason := checkEntropy(r.Entropy, secret); reason != "" {
 			return reason
 		}

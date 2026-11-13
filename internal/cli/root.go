@@ -73,6 +73,6 @@ rule's own samples run through the engine whenever rules load.`,
 	root.PersistentFlags().StringVar(&g.configDir, "config-dir", defaultConfigDir,
 		"directory of user rule layers (*.cue, package whac)")
 
-	root.AddCommand(newVersionCmd(), newRulesCmd(g))
+	root.AddCommand(newVersionCmd(), newRulesCmd(g), newScanCmd(g), newAllowCmd(g))
 	return root
 }

@@ -4,10 +4,11 @@ import { Image } from 'astro:assets';
 import '../styles/landing.css';
 import logo from '../assets/whac-a-leak.jpeg';
 
-// A real rule in the shape of the rule schema (.okfw/specs/rule-schema).
-// From Milestone 5, docs/src/demo/gen.go also produces the scan output shown
-// beside it by running whac itself; until then that panel says "coming soon".
+// A real layer (docs/src/demo/rule.cue) and the output of a real scan with it.
+// `make docs-demo` regenerates scan-output.txt by running whac on app.env;
+// TestDocsDemoOutputIsCurrent fails when the file is stale.
 import ruleSource from '../demo/rule.cue?raw';
+import scanOutput from '../demo/scan-output.txt?raw';
 
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 const repo = 'https://github.com/infrashift/whac-a-leak';
@@ -15,6 +16,20 @@ const repo = 'https://github.com/infrashift/whac-a-leak';
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 // Light CUE highlighting, one line at a time: comments, strings, field labels.
+// Scan output: severity and rule ID stand out; fingerprints are muted.
+const scanHtml = scanOutput
+	.trimEnd()
+	.split('\n')
+	.map((line) => {
+		const head = /^(CRITICAL|HIGH|MEDIUM|LOW)(\s+)(\S+)(\s+)(.*)$/.exec(line);
+		if (head) {
+			return `<span class="finding">${head[1]}</span>${head[2]}<span class="rule">${esc(head[3])}</span>${head[4]}${esc(head[5])}`;
+		}
+		if (/^\s+fingerprint:/.test(line)) return `<span class="cmt">${esc(line)}</span>`;
+		return esc(line);
+	})
+	.join('\n');
+
 const ruleHtml = ruleSource
 	.trimEnd()
 	.split('\n')
@@ -106,17 +121,13 @@ const ruleHtml = ruleSource
 		<div class="terminal">
 			<div class="terminal-bar">
 				<span class="dot"></span><span class="dot"></span><span class="dot"></span>
-				<span class="title">whac scan . &nbsp;·&nbsp; findings</span>
+				<span class="title">whac scan app.env &nbsp;·&nbsp; findings</span>
 			</div>
-			<div class="coming-soon">
-				<span class="score">Scan output</span>
-				<span class="big">Available in Milestone 2</span>
-				<p>whac generates this panel from a real scan of the rule on the left.</p>
-			</div>
+			<pre class="wrap" set:html={scanHtml}></pre>
 		</div>
 	</div>
 	<p class="demo-caption">
-		At load time, whac unifies the rules with the embedded schema and compiles them into Go matchers. CUE does not run during the scan.
+		Left: a layer with one rule. Right: the output of <code>whac scan</code> on a file with fake tokens. The placeholder token is not reported. whac produced this output.
 	</p>
 </section>
 
@@ -164,10 +175,10 @@ const ruleHtml = ruleSource
 			<strong>CUE rules</strong><span>Schema, layering, rules verify</span><br /><span class="status done">Done</span>
 		</a>
 		<a class="roadmap-card" href={`${base}docs/project/roadmap/`}>
-			<strong>Scan engine</strong><span>Prefilter, entropy, fingerprints</span><br /><span class="status">Next</span>
+			<strong>Scan engine</strong><span>Prefilter, entropy, fingerprints</span><br /><span class="status done">Done</span>
 		</a>
 		<a class="roadmap-card" href={`${base}docs/project/roadmap/`}>
-			<strong>Structure-aware</strong><span>YAML · JSON · .env key paths</span><br /><span class="status">Planned</span>
+			<strong>Structure-aware</strong><span>YAML · JSON · .env key paths</span><br /><span class="status">Next</span>
 		</a>
 		<a class="roadmap-card" href={`${base}docs/project/roadmap/`}>
 			<strong>Git</strong><span>Pre-commit and full history</span><br /><span class="status">Planned</span>

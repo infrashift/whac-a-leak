@@ -1,4 +1,4 @@
-.PHONY: all test vet-cue lint build bench wiki docs-style docs-dev docs-build clean
+.PHONY: all test vet-cue lint build bench wiki docs-style docs-demo docs-dev docs-build clean
 
 # golangci-lint runs through `go run` at a pinned version, so the current Go
 # toolchain builds it. A binary built with an older Go cannot type-check a newer
@@ -47,6 +47,10 @@ wiki:
 ## docs-style: check the docs, README, PLAN.md, CLAUDE.md and wiki against ASD-STE100 rules
 docs-style:
 	python3 -I scripts/ste-check.py
+
+## docs-demo: regenerate the landing-page scan output with whac itself (exit 1 = findings, expected)
+docs-demo: build
+	cd docs/src/demo && { ../../../bin/whac scan --config-dir . app.env > scan-output.txt; test $$? -eq 1; }
 
 ## docs-dev: run the Astro Starlight site locally (bun)
 docs-dev:

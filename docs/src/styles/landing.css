@@ -573,41 +573,8 @@ a:hover {
 	color: hsl(0, 0%, 100%);
 }
 
-/* Findings and the "coming soon" panel */
+/* Scan output and CUE highlighting */
 .terminal .rule { color: #e0af68; font-weight: 700; }
 .terminal .cmt { color: #565f89; font-style: italic; }
 .terminal .kw { color: #bb9af7; }
 .terminal .finding { color: #f7768e; font-weight: 700; }
-
-.coming-soon {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	gap: 0.6rem;
-	padding: 2rem 1.5rem;
-	text-align: center;
-	font-family: var(--font-mono);
-	color: #a9b1d6;
-	flex: 1;
-}
-
-.coming-soon .score {
-	font-size: 0.75rem;
-	letter-spacing: 0.2em;
-	text-transform: uppercase;
-	color: #e0af68;
-}
-
-.coming-soon .big {
-	font-size: clamp(1.1rem, 2.4vw, 1.5rem);
-	font-weight: 700;
-	color: #f7768e;
-}
-
-.coming-soon p {
-	font-family: var(--font-sans);
-	font-size: 0.85rem;
-	max-width: 22rem;
-	color: hsl(230, 20%, 70%);
-}

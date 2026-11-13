@@ -145,8 +145,8 @@ func TestMatchRuleStages(t *testing.T) {
 
 func TestMatchRuleEmptyGroup(t *testing.T) {
 	r := rule(t, `tok_(x*)`, nil)
-	tr := &trace{}
-	if ms := matchRule(r, []byte("tok_"), []byte("tok_"), tr); len(ms) != 0 {
+	tr := &trace{keywordHit: true}
+	if ms := matchRule(r, []byte("tok_"), tr); len(ms) != 0 {
 		t.Fatalf("empty group produced %v", ms)
 	}
 	if !strings.Contains(tr.explain(), "secret group is empty") {

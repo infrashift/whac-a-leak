@@ -13,7 +13,7 @@ description: "The location-independent whac1: fingerprint that identifies a find
 
 # Fingerprint format
 
-**Status:** Draft. Milestone 2 implements it in `internal/fingerprint`.
+**Status:** Implemented in Milestone 2 (`internal/fingerprint`). Test vector: `printf 'RULE\0secret' | sha256sum` gives `3705e206…aabee`.
 
 ```
 whac1:<hex(SHA-256(rule_id || 0x00 || secret))>

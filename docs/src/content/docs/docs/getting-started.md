@@ -21,32 +21,27 @@ cd whac-a-leak
 make build        # → bin/whac
 ```
 
-## Current state
+## Scan a directory
 
-The repository is at **Milestone 1**. The `whac` CLI loads, layers and verifies
-rules. It does not scan files yet. Milestone 2 adds `whac scan`. See the
-[roadmap](../project/roadmap/).
+1. Run `bin/whac scan .` in the directory to scan.
+2. Read the findings. Each finding shows the severity, the rule ID, the
+   location, the redacted secret and the fingerprint.
+3. Read the exit code: `0` for no findings, `1` for findings.
 
-1. Run `bin/whac rules list`.
-2. Run `bin/whac rules verify`.
+* **Expected result:** whac prints the findings and a summary line.
 
-* **Expected result:** whac lists the builtin rules. Every rule shows `PASS`,
-  and whac exits with code `0`.
-
-To add your own rules, read [Writing Rules](../guides/writing-rules/).
+To add your own rules, read [Writing Rules](../guides/writing-rules/). To
+suppress a false positive, read [Allowlists & Fingerprints](../guides/allowlists/).
 
 ## Planned commands
 
 The project CLI spec defines these commands. They do **not exist yet**:
 
 ```sh
-whac scan .                      # scan the working tree (obeys .gitignore)
 whac scan --staged               # pre-commit: scan only the lines you commit
 whac scan --git main..HEAD       # scan the history of a branch
 whac scan . --format sarif       # output for GitHub code scanning
-whac scan --agent-context       # preflight: env vars, credential files, sockets
-whac rules verify                # run every rule sample
-whac allow add whac1:… --reason "test fixture"
+whac scan --agent-context        # preflight: env vars, credential files, sockets
 ```
 
 Exit codes:

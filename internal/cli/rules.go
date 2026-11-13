@@ -37,7 +37,11 @@ func loadOptions(cmd *cobra.Command, g *globalFlags) rules.Options {
 // loadVerified loads every layer and runs the rules' own tests; any failing
 // sample is a configuration error (ADR-0009). Commands that scan use this.
 func loadVerified(cmd *cobra.Command, g *globalFlags) (*rules.Ruleset, error) {
-	rs, err := rules.Load(loadOptions(cmd, g))
+	return loadVerifiedWith(loadOptions(cmd, g))
+}
+
+func loadVerifiedWith(opts rules.Options) (*rules.Ruleset, error) {
+	rs, err := rules.Load(opts)
 	if err != nil {
 		return nil, &exitError{code: ExitError, err: err}
 	}

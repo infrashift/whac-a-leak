@@ -1,0 +1,10 @@
+# Every value is fake.
+aws:
+  access_key_id: AKIAIOSFODNN7EXAMPLE
+  access_key_placeholder: AKIAXXXXXXXXXXXXXXXX
+  region: us-east-1
+service:
+  client_secret: "Zx9EXAMPLEq7Lm2Vt8Rk4Wp6Ys3Hd5Nf"
+  request_id: 550e8400-e29b-41d4-a716-446655440000
+  api_key: 550e8400-e29b-41d4-a716-446655440000
+  ключ: ghp_EXAMPLE0a1B2c3D4e5F6g7H8i9J0kLmNoPqr

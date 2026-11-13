@@ -60,7 +60,7 @@ Each allowlist entry maps a key to a reason. The reason must not be empty.
 * `regexes`: a regex over the secret.
 
 Allowlist entries are for false positives only. Rotate a real secret. Do not
-allowlist it. The scan engine applies allowlist entries from Milestone 2.
+allowlist it. See [Allowlists & Fingerprints](../allowlists/).
 
 ## Inspect the result
 

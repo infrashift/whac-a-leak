@@ -1,8 +1,8 @@
 package engine
 
 import (
-	"bytes"
 	"fmt"
+	"strings"
 
 	"github.com/infrashift/whac-a-leak/internal/rules"
 )
@@ -27,15 +27,19 @@ func Verify(rs []*rules.Rule) []Failure {
 	var out []Failure
 	for _, r := range rs {
 		for i, s := range r.Tests.MustMatch {
-			t := &trace{}
 			content := []byte(s)
-			if len(matchRule(r, content, bytes.ToLower(content), t)) == 0 {
-				out = append(out, Failure{RuleID: r.ID, Sample: fmt.Sprintf("mustMatch[%d]", i), Reason: t.explain()})
+			hits := keywordHits(r, content)
+			t := &trace{keywordHit: len(hits) > 0}
+			if len(evalRule(r, content, hits, t)) == 0 {
+				reason := t.explain()
+				if t.keywordHit && t.regexHits == 0 && !r.Multiline && strings.ContainsRune(s, '\n') {
+					reason += " on the keyword's line; set multiline: true for a secret that spans lines"
+				}
+				out = append(out, Failure{RuleID: r.ID, Sample: fmt.Sprintf("mustMatch[%d]", i), Reason: reason})
 			}
 		}
 		for i, s := range r.Tests.MustIgnore {
-			content := []byte(s)
-			if n := len(matchRule(r, content, bytes.ToLower(content), nil)); n > 0 {
+			if n := len(MatchRule(r, []byte(s))); n > 0 {
 				out = append(out, Failure{RuleID: r.ID, Sample: fmt.Sprintf("mustIgnore[%d]", i),
 					Reason: fmt.Sprintf("produced %d finding(s), expected none", n)})
 			}

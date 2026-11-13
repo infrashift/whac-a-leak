@@ -1,0 +1,11 @@
+CRITICAL  ACME_API_TOKEN  app.env:2:12
+          Acme API token
+          secret: acme****lmno
+          fingerprint: whac1:570a9c2746d48b53c51a70dda018e064e5885c1d6fe16abf63fb7a28d24359b9
+
+CRITICAL  GITHUB_TOKEN  app.env:4:10
+          GitHub personal access, OAuth, app or refresh token
+          secret: ghp_****oPqr
+          fingerprint: whac1:ceaecd45ce7e62d41df233cda112cf1e4aed182b36f61607fec15d2826878fec
+
+2 finding(s): 2 CRITICAL. Scanned 1 file(s), 187 B.

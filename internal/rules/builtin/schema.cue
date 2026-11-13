@@ -23,6 +23,10 @@ package whac
 	regex?: string
 	// Capture group holding the secret; 0 means the whole match.
 	secretGroup: *1 | (int & >=0)
+	// The engine evaluates the regex on each line that holds a keyword. Set
+	// multiline for secrets that span lines, such as PEM keys: the window then
+	// runs up to 64 KiB from the start of the keyword's line.
+	multiline: *false | bool
 	// Assignment rules (Milestone 3): a regex on the key name and/or
 	// doublestar globs over the dotted key path.
 	keyContext?: string
