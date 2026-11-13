@@ -24,7 +24,8 @@ description: The whac commands, flags and exit codes.
 
 | Flag | Default | Description |
 |---|---|---|
-| `--format` | `text` | `text`, `json` or `sarif`. See [Output Formats](../output-formats/). |
+| `--format` | `text` | The format of the report on stdout: `text`, `json` or `sarif`. See [Output Formats](../output-formats/). |
+| `--output FORMAT=PATH` | none | Also write the report to a file, for example `json=whac.json`. Repeat the flag for more files. See [Write a report to a file](../output-formats/#write-a-report-to-a-file). |
 | `--no-redact` | off | Print each secret in full. |
 | `--severity-threshold` | `LOW` | Report findings at or above `LOW`, `MEDIUM`, `HIGH` or `CRITICAL`. |
 | `--staged` | off | Scan staged changes. Report only added lines. See [Pre-commit Hook](../../guides/pre-commit/). |

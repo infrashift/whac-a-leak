@@ -1,6 +1,6 @@
 ---
 title: Output Formats
-description: The text and JSON report formats of whac scan.
+description: The text, JSON and SARIF report formats of whac scan, and report files.
 ---
 
 Set the format with `--format text` (the default), `--format json` or
@@ -77,3 +77,33 @@ An assignment finding also has `keyPath`, for example
 
 `--format sarif` writes SARIF 2.1.0 for code scanning services. SARIF output
 always redacts secrets. See [CI & SARIF](../../guides/ci-sarif/).
+
+## Write a report to a file
+
+`--format` sets the report on stdout. `--output FORMAT=PATH` also writes a
+report to a file. One scan writes all reports. Repeat `--output` for more
+files.
+
+```sh
+whac scan . --output json=whac.json --output sarif=whac.sarif
+```
+
+whac prints the text report on the terminal. It writes `whac.json` and
+`whac.sarif` with the same findings.
+
+- `FORMAT` is `text`, `json` or `sarif`.
+- whac creates each file with mode `0600`. A report file has no colors.
+- `--no-redact` applies to the files and to stdout. SARIF always redacts.
+- whac checks each `--output` value before the scan. A bad value, an unknown
+  format or the same path two times gives exit code `2`.
+- whac writes a temporary file and then renames it. If the write fails, the
+  path keeps its old content, and whac exits with code `2`.
+
+## One finding per line
+
+The JSON report is one document. whac does not write JSON Lines. To get one
+finding per line, use `jq`:
+
+```sh
+jq -c '.findings[]' whac.json
+```
