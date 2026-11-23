@@ -1,5 +1,5 @@
 ---
-id: "01a1d2c5-0795-75ca-afba-71e9f9893a21"
+x-okfw-id: "01a1d2c5-0795-75ca-afba-71e9f9893a21"
 title: "ADR-0009: Rule tests run through the real engine pipeline at load time"
 type: "ADR"
 tags:
@@ -7,8 +7,8 @@ tags:
   - "rules"
   - "testing"
   - "cue"
-created: "2026-11-12T20:38:10-06:00"
-timestamp: "2026-11-12T20:38:10-06:00"
+x-okfw-created: "2026-11-12T20:38:10-06:00"
+x-okfw-timestamp: "2026-11-12T20:38:10-06:00"
 description: "The Go engine runs each rule's mustMatch and mustIgnore samples at every load, and a failure stops the load; CUE checks mustMatch against the regex for rule authors."
 ---
 

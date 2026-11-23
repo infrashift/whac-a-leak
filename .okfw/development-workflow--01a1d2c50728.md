@@ -1,13 +1,13 @@
 ---
-id: "01a1d2c5-0728-76e3-94cc-270a0c61a835"
+x-okfw-id: "01a1d2c5-0728-76e3-94cc-270a0c61a835"
 title: "Development workflow"
 type: "Guide"
 tags:
   - "conventions"
   - "workflow"
   - "meta"
-created: "2026-11-12T20:38:10-06:00"
-timestamp: "2026-11-12T20:38:10-06:00"
+x-okfw-created: "2026-11-12T20:38:10-06:00"
+x-okfw-timestamp: "2026-11-12T20:38:10-06:00"
 description: "The loop for each Whac-a-Leak milestone: implement, lint, verify until green, update the wiki and docs, then commit."
 ---
 

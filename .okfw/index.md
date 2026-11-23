@@ -1,5 +1,7 @@
 ---
-okf_version: "0.2"
+okf_version: "0.3"
+description: "Whac-a-Leak's design decisions, architecture, specs, milestone issues and daily notes: read it before you change or explain the secret scanner, its CUE rules or its sources."
+title: "Whac-a-Leak"
 ---
 
 # /

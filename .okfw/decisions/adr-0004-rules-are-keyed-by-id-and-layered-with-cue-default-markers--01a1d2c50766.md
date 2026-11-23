@@ -1,5 +1,5 @@
 ---
-id: "01a1d2c5-0766-7eeb-965d-2f4d16fd577f"
+x-okfw-id: "01a1d2c5-0766-7eeb-965d-2f4d16fd577f"
 title: "ADR-0004: Rules are keyed by ID and layered with CUE default markers"
 type: "ADR"
 tags:
@@ -7,8 +7,8 @@ tags:
   - "cue"
   - "rules"
   - "layering"
-created: "2026-11-12T20:38:10-06:00"
-timestamp: "2026-11-12T20:38:10-06:00"
+x-okfw-created: "2026-11-12T20:38:10-06:00"
+x-okfw-timestamp: "2026-11-12T20:38:10-06:00"
 description: "A map keyed by rule ID holds the rules, with defaulted enabled and severity fields, so layers add, tighten, disable or re-grade rules without a fork."
 ---
 

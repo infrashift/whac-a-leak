@@ -1,5 +1,5 @@
 ---
-id: "01a1d2e3-88a9-7757-a1bd-0c2f2d9c699f"
+x-okfw-id: "01a1d2e3-88a9-7757-a1bd-0c2f2d9c699f"
 title: "ADR-0012: Load layers as one in-memory CUE build instance"
 type: "ADR"
 tags:
@@ -7,8 +7,8 @@ tags:
   - "cue"
   - "rules"
   - "loader"
-created: "2026-11-12T21:11:29-06:00"
-timestamp: "2026-11-12T21:11:29-06:00"
+x-okfw-created: "2026-11-12T21:11:29-06:00"
+x-okfw-timestamp: "2026-11-12T21:11:29-06:00"
 description: "The loader parses the builtin files and each layer into one in-memory CUE package instance; it needs no cue.mod, no overlay and no files on disk."
 ---
 

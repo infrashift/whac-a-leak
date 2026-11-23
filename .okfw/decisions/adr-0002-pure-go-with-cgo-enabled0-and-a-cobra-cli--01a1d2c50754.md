@@ -1,5 +1,5 @@
 ---
-id: "01a1d2c5-0754-781f-8f5f-2299deb95a26"
+x-okfw-id: "01a1d2c5-0754-781f-8f5f-2299deb95a26"
 title: "ADR-0002: Pure Go with CGO_ENABLED=0 and a Cobra CLI"
 type: "ADR"
 tags:
@@ -7,8 +7,8 @@ tags:
   - "go"
   - "cli"
   - "build"
-created: "2026-11-12T20:38:10-06:00"
-timestamp: "2026-11-12T20:38:10-06:00"
+x-okfw-created: "2026-11-12T20:38:10-06:00"
+x-okfw-timestamp: "2026-11-12T20:38:10-06:00"
 description: "whac is a single static pure-Go binary (CGO_ENABLED=0) with a command surface built on spf13/cobra."
 ---
 

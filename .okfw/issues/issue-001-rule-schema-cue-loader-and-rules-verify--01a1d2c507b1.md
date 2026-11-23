@@ -1,15 +1,15 @@
 ---
-id: "01a1d2c5-07b1-7b8a-a5ec-68806dcc0ce9"
+x-okfw-id: "01a1d2c5-07b1-7b8a-a5ec-68806dcc0ce9"
 title: "ISSUE-001: Rule schema, CUE loader and rules verify"
 type: "Issue"
-kind: "issue"
+x-okfw-kind: "issue"
 tags:
   - "issue"
   - "phase-1"
   - "rules"
   - "closed"
-created: "2026-11-12T20:38:10-06:00"
-timestamp: "2026-11-12T21:12:24-06:00"
+x-okfw-created: "2026-11-12T20:38:10-06:00"
+x-okfw-timestamp: "2026-11-12T21:12:24-06:00"
 description: "Milestone 1: Cobra skeleton, embedded CUE schema and builtin rules, loader for layers, decode and compile, and the rules list and verify commands."
 ---
 

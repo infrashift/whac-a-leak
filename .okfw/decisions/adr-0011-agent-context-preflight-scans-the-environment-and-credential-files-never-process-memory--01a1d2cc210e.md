@@ -1,5 +1,5 @@
 ---
-id: "01a1d2cc-210e-70b6-98bd-0a17f95aa83d"
+x-okfw-id: "01a1d2cc-210e-70b6-98bd-0a17f95aa83d"
 title: "ADR-0011: Agent-context preflight scans the environment and credential files, never process memory"
 type: "ADR"
 tags:
@@ -7,8 +7,8 @@ tags:
   - "agent-context"
   - "scope"
   - "security"
-created: "2026-11-12T20:45:55-06:00"
-timestamp: "2026-11-12T20:45:55-06:00"
+x-okfw-created: "2026-11-12T20:45:55-06:00"
+x-okfw-timestamp: "2026-11-12T20:45:55-06:00"
 description: "whac scan --agent-context audits what an agent process can reach (environment, credential files, credential sockets, optional IMDS) as a preflight gate; process memory is out of scope."
 ---
 

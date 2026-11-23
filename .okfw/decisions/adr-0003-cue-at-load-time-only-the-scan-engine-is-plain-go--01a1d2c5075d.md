@@ -1,5 +1,5 @@
 ---
-id: "01a1d2c5-075d-77c0-982a-78e95b88f55b"
+x-okfw-id: "01a1d2c5-075d-77c0-982a-78e95b88f55b"
 title: "ADR-0003: CUE at load time only; the scan engine is plain Go"
 type: "ADR"
 tags:
@@ -7,8 +7,8 @@ tags:
   - "cue"
   - "engine"
   - "performance"
-created: "2026-11-12T20:38:10-06:00"
-timestamp: "2026-11-12T20:38:10-06:00"
+x-okfw-created: "2026-11-12T20:38:10-06:00"
+x-okfw-timestamp: "2026-11-12T20:38:10-06:00"
 description: "CUE unifies, validates and decodes rules at startup. The scan never calls the CUE runtime; it runs an Aho-Corasick prefilter, Go regexp and entropy checks."
 ---
 

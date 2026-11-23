@@ -1,12 +1,12 @@
 ---
-id: "01a1d2c5-0744-7c2a-b546-061453b7dfd4"
+x-okfw-id: "01a1d2c5-0744-7c2a-b546-061453b7dfd4"
 title: "CLI contract"
 type: "Spec"
 tags:
   - "spec"
   - "cli"
-created: "2026-11-12T20:38:10-06:00"
-timestamp: "2026-11-12T20:38:10-06:00"
+x-okfw-created: "2026-11-12T20:38:10-06:00"
+x-okfw-timestamp: "2026-11-12T20:38:10-06:00"
 description: "The whac command surface: subcommands, flags, finding categories, output formats and exit codes."
 ---
 

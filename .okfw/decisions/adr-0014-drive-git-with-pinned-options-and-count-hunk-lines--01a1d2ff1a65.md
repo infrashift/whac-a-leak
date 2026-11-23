@@ -1,13 +1,13 @@
 ---
-id: "01a1d2ff-1a65-7691-bf6b-e50734269eef"
+x-okfw-id: "01a1d2ff-1a65-7691-bf6b-e50734269eef"
 title: "ADR-0014: Drive git with pinned options and count hunk lines"
 type: "ADR"
 tags:
   - "adr"
   - "git"
   - "source"
-created: "2026-11-12T21:41:36-06:00"
-timestamp: "2026-11-12T21:41:36-06:00"
+x-okfw-created: "2026-11-12T21:41:36-06:00"
+x-okfw-timestamp: "2026-11-12T21:41:36-06:00"
 description: "whac runs the git binary with options that override user config, and parses -U0 diffs by hunk line counts, so diff output always has one known shape."
 ---
 
