@@ -1,14 +1,14 @@
 ---
-id: "01a1d321-f364-77fd-9ac4-8f4bb984d202"
+x-okfw-id: "01a1d321-f364-77fd-9ac4-8f4bb984d202"
 title: "ISSUE-007: Release v0.1.0"
 type: "Issue"
-kind: "issue"
+x-okfw-kind: "issue"
 tags:
   - "issue"
   - "release"
   - "closed"
-created: "2026-11-12T22:19:40-06:00"
-timestamp: "2026-11-12T22:24:03-06:00"
+x-okfw-created: "2026-11-12T22:19:40-06:00"
+x-okfw-timestamp: "2026-11-12T22:24:03-06:00"
 description: "Tag and publish v0.1.0: Apache 2.0 license, release archives for linux and darwin on amd64 and arm64, checksums, provenance and install docs."
 ---
 

@@ -1,15 +1,15 @@
 ---
-id: "01a1d2c5-07d9-76e0-ac5d-8f4d906b49c8"
+x-okfw-id: "01a1d2c5-07d9-76e0-ac5d-8f4d906b49c8"
 title: "ISSUE-005: SARIF, default ruleset, CI, docs demo and release polish"
 type: "Issue"
-kind: "issue"
+x-okfw-kind: "issue"
 tags:
   - "issue"
   - "phase-5"
   - "release"
   - "closed"
-created: "2026-11-12T20:38:10-06:00"
-timestamp: "2026-11-12T21:50:30-06:00"
+x-okfw-created: "2026-11-12T20:38:10-06:00"
+x-okfw-timestamp: "2026-11-12T21:50:30-06:00"
 description: "Milestone 5: SARIF output, about 30 builtin rules, CI workflow with self-scan, generated landing-page demo, remaining docs and benchmarks."
 ---
 

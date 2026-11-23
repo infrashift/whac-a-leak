@@ -1,15 +1,15 @@
 ---
-id: "01a1d2c5-07c5-73e8-b714-22cb31976238"
+x-okfw-id: "01a1d2c5-07c5-73e8-b714-22cb31976238"
 title: "ISSUE-003: Structure-aware scanning and assignment rules"
 type: "Issue"
-kind: "issue"
+x-okfw-kind: "issue"
 tags:
   - "issue"
   - "phase-3"
   - "structural"
   - "closed"
-created: "2026-11-12T20:38:10-06:00"
-timestamp: "2026-11-12T21:36:07-06:00"
+x-okfw-created: "2026-11-12T20:38:10-06:00"
+x-okfw-timestamp: "2026-11-12T21:36:07-06:00"
 description: "Milestone 3: YAML, JSON, dotenv, properties and HCL-lite extractors, assignment rules with keyContext and sensitive paths, placeholder filter and the zero-escape entropy trap."
 ---
 

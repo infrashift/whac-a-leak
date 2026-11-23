@@ -1,13 +1,13 @@
 ---
-id: "01a1d2c5-0770-7512-a10d-c10febde71d9"
+x-okfw-id: "01a1d2c5-0770-7512-a10d-c10febde71d9"
 title: "ADR-0005: Structured files are parsed by lightweight Go extractors, not the CUE runtime"
 type: "ADR"
 tags:
   - "adr"
   - "structural"
   - "performance"
-created: "2026-11-12T20:38:10-06:00"
-timestamp: "2026-11-12T20:38:10-06:00"
+x-okfw-created: "2026-11-12T20:38:10-06:00"
+x-okfw-timestamp: "2026-11-12T20:38:10-06:00"
 description: "Small Go extractors turn YAML, JSON, dotenv, properties/ini and HCL-style files into positioned key-path and value pairs; CUE only declares sensitive key paths."
 ---
 

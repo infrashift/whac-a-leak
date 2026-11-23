@@ -1,15 +1,15 @@
 ---
-id: "01a1d369-9d8b-7b8e-ba6c-c262f684999f"
+x-okfw-id: "01a1d369-9d8b-7b8e-ba6c-c262f684999f"
 title: "ISSUE-008: Report files with --output"
 type: "Issue"
-kind: "issue"
+x-okfw-kind: "issue"
 tags:
   - "issue"
   - "phase-7"
   - "output"
   - "closed"
-created: "2026-11-12T23:37:56-06:00"
-timestamp: "2026-11-12T23:37:56-06:00"
+x-okfw-created: "2026-11-12T23:37:56-06:00"
+x-okfw-timestamp: "2026-11-12T23:37:56-06:00"
 description: "Milestone 7: whac scan writes reports to files with a repeatable --output FORMAT=PATH flag, so one scan gives text on the screen and JSON or SARIF files."
 ---
 

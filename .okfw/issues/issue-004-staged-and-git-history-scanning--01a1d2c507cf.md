@@ -1,15 +1,15 @@
 ---
-id: "01a1d2c5-07cf-73e8-891a-07fe24ff9c22"
+x-okfw-id: "01a1d2c5-07cf-73e8-891a-07fe24ff9c22"
 title: "ISSUE-004: Staged and git-history scanning"
 type: "Issue"
-kind: "issue"
+x-okfw-kind: "issue"
 tags:
   - "issue"
   - "phase-4"
   - "git"
   - "closed"
-created: "2026-11-12T20:38:10-06:00"
-timestamp: "2026-11-12T21:41:54-06:00"
+x-okfw-created: "2026-11-12T20:38:10-06:00"
+x-okfw-timestamp: "2026-11-12T21:41:54-06:00"
 description: "Milestone 4: --staged pre-commit mode and --git history mode with a streaming diff parser, commit attribution and fingerprint deduplication."
 ---
 

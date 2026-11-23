@@ -1,13 +1,13 @@
 ---
-id: "01a1d369-82f5-7294-8cf6-be0af47c28c8"
+x-okfw-id: "01a1d369-82f5-7294-8cf6-be0af47c28c8"
 title: "ADR-0017: Report files through a repeatable --output flag; JSON stays one document"
 type: "ADR"
 tags:
   - "adr"
   - "output"
   - "cli"
-created: "2026-11-12T23:37:49-06:00"
-timestamp: "2026-11-12T23:37:49-06:00"
+x-okfw-created: "2026-11-12T23:37:49-06:00"
+x-okfw-timestamp: "2026-11-12T23:37:49-06:00"
 description: "whac scan writes extra reports to files with --output FORMAT=PATH while --format sets stdout; the JSON report stays one document and whac does not add JSON Lines."
 ---
 

@@ -1,13 +1,13 @@
 ---
-id: "01a1d2c5-0736-7cb0-8108-544663871f42"
+x-okfw-id: "01a1d2c5-0736-7cb0-8108-544663871f42"
 title: "Rule schema"
 type: "Spec"
 tags:
   - "spec"
   - "rules"
   - "cue"
-created: "2026-11-12T20:38:10-06:00"
-timestamp: "2026-11-12T20:38:10-06:00"
+x-okfw-created: "2026-11-12T20:38:10-06:00"
+x-okfw-timestamp: "2026-11-12T20:38:10-06:00"
 description: "The #SecretRule CUE schema, the rule kinds, rule samples, and how layers in the config dir unify with the builtin rules."
 ---
 

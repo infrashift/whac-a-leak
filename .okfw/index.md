@@ -1,5 +1,7 @@
 ---
-okf_version: "0.2"
+okf_version: "0.3"
+description: "Design record for Whac-a-Leak, the CUE-ruled Go secret scanner: ADRs on rule layers, entropy, fingerprints, git scanning and the agent-context preflight, plus specs and milestone issues."
+title: "Whac-a-Leak"
 ---
 
 # /
