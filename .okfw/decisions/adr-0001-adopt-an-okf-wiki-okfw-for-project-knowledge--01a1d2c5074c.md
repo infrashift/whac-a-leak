@@ -1,13 +1,13 @@
 ---
-id: "01a1d2c5-074c-710d-96f4-d1b6fbdcc6de"
+x-okfw-id: "01a1d2c5-074c-710d-96f4-d1b6fbdcc6de"
 title: "ADR-0001: Adopt an OKF wiki (okfw) for project knowledge"
 type: "ADR"
 tags:
   - "adr"
   - "process"
   - "okf"
-created: "2026-11-12T20:38:10-06:00"
-timestamp: "2026-11-12T20:38:10-06:00"
+x-okfw-created: "2026-11-12T20:38:10-06:00"
+x-okfw-timestamp: "2026-11-12T20:38:10-06:00"
 description: "An okfw-managed OKF wiki in .okfw/ holds project knowledge: architecture, specs, ADRs, issues and daily notes."
 ---
 

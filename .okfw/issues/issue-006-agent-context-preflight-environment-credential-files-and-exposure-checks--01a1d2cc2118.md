@@ -1,15 +1,15 @@
 ---
-id: "01a1d2cc-2118-7c86-be9b-d99bea2fa539"
+x-okfw-id: "01a1d2cc-2118-7c86-be9b-d99bea2fa539"
 title: "ISSUE-006: Agent-context preflight: environment, credential files and exposure checks"
 type: "Issue"
-kind: "issue"
+x-okfw-kind: "issue"
 tags:
   - "issue"
   - "phase-6"
   - "agent-context"
   - "closed"
-created: "2026-11-12T20:45:55-06:00"
-timestamp: "2026-11-12T21:57:59-06:00"
+x-okfw-created: "2026-11-12T20:45:55-06:00"
+x-okfw-timestamp: "2026-11-12T21:57:59-06:00"
 description: "Milestone 6: env and home sources, credential paths in CUE, exposure findings for credential sockets and opt-in IMDS, and the whac scan --agent-context preflight gate."
 ---
 

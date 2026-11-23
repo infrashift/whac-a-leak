@@ -1,5 +1,5 @@
 ---
-id: "01a1d307-3ff8-7685-b537-a7284bda2bbf"
+x-okfw-id: "01a1d307-3ff8-7685-b537-a7284bda2bbf"
 title: "ADR-0015: Assemble push-protected samples and allowlist fixtures for the self-scan"
 type: "ADR"
 tags:
@@ -7,8 +7,8 @@ tags:
   - "rules"
   - "ci"
   - "security"
-created: "2026-11-12T21:50:30-06:00"
-timestamp: "2026-11-12T21:50:30-06:00"
+x-okfw-created: "2026-11-12T21:50:30-06:00"
+x-okfw-timestamp: "2026-11-12T21:50:30-06:00"
 description: "Rule samples for token formats that GitHub push protection detects are assembled from pieces at load time; the repository scans itself in CI with path and fingerprint allowlists for its fixtures."
 ---
 

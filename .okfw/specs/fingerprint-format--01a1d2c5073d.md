@@ -1,13 +1,13 @@
 ---
-id: "01a1d2c5-073d-7e9a-8614-f535ba8a16fb"
+x-okfw-id: "01a1d2c5-073d-7e9a-8614-f535ba8a16fb"
 title: "Fingerprint format"
 type: "Spec"
 tags:
   - "spec"
   - "fingerprint"
   - "allowlist"
-created: "2026-11-12T20:38:10-06:00"
-timestamp: "2026-11-12T20:38:10-06:00"
+x-okfw-created: "2026-11-12T20:38:10-06:00"
+x-okfw-timestamp: "2026-11-12T20:38:10-06:00"
 description: "The location-independent whac1: fingerprint that identifies a finding in allowlists, deduplication and reports."
 ---
 

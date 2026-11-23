@@ -1,13 +1,13 @@
 ---
-id: "01a1d2c5-078c-70e5-91fd-91c56f1fbc4a"
+x-okfw-id: "01a1d2c5-078c-70e5-91fd-91c56f1fbc4a"
 title: "ADR-0008: No live secret verification in v1"
 type: "ADR"
 tags:
   - "adr"
   - "scope"
   - "security"
-created: "2026-11-12T20:38:10-06:00"
-timestamp: "2026-11-12T20:38:10-06:00"
+x-okfw-created: "2026-11-12T20:38:10-06:00"
+x-okfw-timestamp: "2026-11-12T20:38:10-06:00"
 description: "whac makes no network calls to check whether a found credential is live; detection runs fully offline."
 ---
 

@@ -1,5 +1,5 @@
 ---
-id: "01a1d321-f35a-70ee-b73c-735a9bc06ebe"
+x-okfw-id: "01a1d321-f35a-70ee-b73c-735a9bc06ebe"
 title: "ADR-0016: Release cross-compiled archives with checksums and provenance under Apache 2.0"
 type: "ADR"
 tags:
@@ -7,8 +7,8 @@ tags:
   - "release"
   - "license"
   - "supply-chain"
-created: "2026-11-12T22:19:39-06:00"
-timestamp: "2026-11-12T22:19:39-06:00"
+x-okfw-created: "2026-11-12T22:19:39-06:00"
+x-okfw-timestamp: "2026-11-12T22:19:39-06:00"
 description: "A v* tag builds tar.gz archives for linux and darwin on amd64 and arm64, smoke-tests each on its platform, and publishes them with SHA256SUMS and a SLSA provenance attestation; the project uses Apache 2.0."
 ---
 

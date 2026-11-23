@@ -1,12 +1,12 @@
 ---
-id: "01a1d2c5-079e-7af1-a434-7921f21a8c90"
+x-okfw-id: "01a1d2c5-079e-7af1-a434-7921f21a8c90"
 title: "ADR-0010: Astro Starlight docs published to GitHub Pages"
 type: "ADR"
 tags:
   - "adr"
   - "docs"
-created: "2026-11-12T20:38:10-06:00"
-timestamp: "2026-11-12T20:38:10-06:00"
+x-okfw-created: "2026-11-12T20:38:10-06:00"
+x-okfw-timestamp: "2026-11-12T20:38:10-06:00"
 description: "User documentation is an Astro Starlight site in docs/, built with bun and deployed to GitHub Pages by .github/workflows/docs-release.yml."
 ---
 

@@ -1,12 +1,12 @@
 ---
-id: "01a1d2c5-07a8-7302-a1ee-9ff30d338aaa"
+x-okfw-id: "01a1d2c5-07a8-7302-a1ee-9ff30d338aaa"
 title: "Whac-a-Leak architecture overview"
 type: "Architecture"
 tags:
   - "architecture"
   - "overview"
-created: "2026-11-12T20:38:10-06:00"
-timestamp: "2026-11-12T20:38:10-06:00"
+x-okfw-created: "2026-11-12T20:38:10-06:00"
+x-okfw-timestamp: "2026-11-12T20:38:10-06:00"
 description: "Package map, load phase and scan phase, sources and outputs of the whac secret scanner."
 ---
 

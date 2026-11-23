@@ -1,15 +1,15 @@
 ---
-id: "01a1d2c5-07bb-77c2-babe-38b0a30814b1"
+x-okfw-id: "01a1d2c5-07bb-77c2-babe-38b0a30814b1"
 title: "ISSUE-002: Scan engine, filesystem source, fingerprints and allowlist"
 type: "Issue"
-kind: "issue"
+x-okfw-kind: "issue"
 tags:
   - "issue"
   - "phase-2"
   - "engine"
   - "closed"
-created: "2026-11-12T20:38:10-06:00"
-timestamp: "2026-11-12T21:25:46-06:00"
+x-okfw-created: "2026-11-12T20:38:10-06:00"
+x-okfw-timestamp: "2026-11-12T21:25:46-06:00"
 description: "Milestone 2: Aho-Corasick prefilter, regex, entropy and charset checks, filters, whac1 fingerprints, allowlists, filesystem source and text/JSON output."
 ---
 

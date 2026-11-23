@@ -1,13 +1,13 @@
 ---
-id: "01a1d2f0-4316-7893-a5bd-d75cb4d95e73"
+x-okfw-id: "01a1d2f0-4316-7893-a5bd-d75cb4d95e73"
 title: "ADR-0013: Regexes run on keyword line windows"
 type: "ADR"
 tags:
   - "adr"
   - "engine"
   - "performance"
-created: "2026-11-12T21:25:23-06:00"
-timestamp: "2026-11-12T21:25:23-06:00"
+x-okfw-created: "2026-11-12T21:25:23-06:00"
+x-okfw-timestamp: "2026-11-12T21:25:23-06:00"
 description: "The engine runs a rule's regex only on the lines that hold one of its keywords; a multiline rule widens the window to 64 KiB, and verification uses the same windows."
 ---
 

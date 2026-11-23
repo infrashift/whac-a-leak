@@ -1,13 +1,13 @@
 ---
-id: "01a1d2c5-0779-7ac4-9488-aa24bc724d91"
+x-okfw-id: "01a1d2c5-0779-7ac4-9488-aa24bc724d91"
 title: "ADR-0006: Entropy thresholds are charset-aware"
 type: "ADR"
 tags:
   - "adr"
   - "entropy"
   - "engine"
-created: "2026-11-12T20:38:10-06:00"
-timestamp: "2026-11-12T20:38:10-06:00"
+x-okfw-created: "2026-11-12T20:38:10-06:00"
+x-okfw-timestamp: "2026-11-12T20:38:10-06:00"
 description: "The engine compares Shannon entropy with thresholds for each charset and a minimum length, because the alphabet limits the maximum entropy of a string."
 ---
 
